@@ -4,8 +4,6 @@
     --brand-secondary: #6c757d;
     --bg-body: #ffffff;
     --text-main: #212529;
-
-    --transition-speed: 0.3s;
 }
 [data-bs-theme="dark"] {
     --bg-body: #121212; 

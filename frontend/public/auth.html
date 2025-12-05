@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accedi - MentorMatch</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
+</head>
+
+<body class="bg-body-tertiary d-flex align-items-center justify-content-center vh-100">
+
+    <div class="card shadow p-4" style="max-width: 400px; width: 100%;">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-primary">MentorMatch</h2>
+            <p class="text-body-secondary">Benvenuto! Inserisci il tuo nome per entrare.</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="mb-3">
+                <label for="usernameInput" class="form-label">Nome Utente</label>
+                <input type="text" class="form-control" id="usernameInput" placeholder="Es. Mario Rossi" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="passwordInput" class="form-label">Password</label>
+                <input type="password" class="form-control" id="passwordInput" placeholder="******">
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Accedi</button>
+            </div>
+        </form>
+
+        <div class="text-center mt-3">
+            <a href="index.html" class="small text-body-secondary">Torna alla Home</a>
+        </div>
+    </div>
+
+    <script src="../src/js/utils.js"></script>
+
+    <script src="assets/js/theme.js"></script>
+
+    <script>
+        // Logica Login
+        const loginForm = document.getElementById('loginForm');
+
+        loginForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const username = document.getElementById('usernameInput').value;
+
+            if (username) {
+                AuthService.login(username);
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+
+</html>
