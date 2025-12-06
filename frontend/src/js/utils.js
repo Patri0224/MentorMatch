@@ -70,3 +70,8 @@ function HomepageIfNotAuthenticated() {
         window.location.href = 'index.html';
     }
 }
+function HomepageIfAuthenticated() {
+    if (AuthService.isLoggedIn()) {
+        window.location.href = 'index.html';
+    }
+}
