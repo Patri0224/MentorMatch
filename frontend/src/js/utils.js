@@ -64,3 +64,9 @@ function updateNavbarUI() {
 }
 
 document.addEventListener('DOMContentLoaded', updateNavbarUI);
+
+function HomepageIfNotAuthenticated() {
+    if (!AuthService.isLoggedIn()) {
+        window.location.href = 'index.html';
+    }
+}
