@@ -333,14 +333,6 @@ CREATE TRIGGER notify_new_message_trigger
     FOR EACH ROW 
     EXECUTE FUNCTION notify_new_message();
 
-
-
-
-
-
-
-
-
 -- ============================================
 -- FUNZIONI UTILITY
 -- ============================================
