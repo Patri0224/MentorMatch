@@ -30,11 +30,13 @@
             <div class="mb-3">
                 <label for="usernameInput" class="form-label">Nome Utente</label>
                 <input type="text" class="form-control" id="usernameInput" placeholder="Es. Mario Rossi" required>
+                <p id="usernameError" class="text-danger small mt-1 d-none">Nome utente non valido.</p>
             </div>
 
             <div class="mb-3">
                 <label for="passwordInput" class="form-label">Password</label>
-                <input type="password" class="form-control" id="passwordInput" placeholder="******">
+                <input type="password" class="form-control" id="passwordInput" placeholder="******" required>
+                <p id="passwordError" class="text-danger small mt-1 d-none">Password non valida.</p>
             </div>
 
             <div class="d-grid">
@@ -51,20 +53,7 @@
 
     <script src="assets/js/theme.js"></script>
 
-    <script>
-        // Logica Login
-        const loginForm = document.getElementById('loginForm');
-
-        loginForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const username = document.getElementById('usernameInput').value;
-
-            if (username) {
-                AuthService.login(username);
-                window.location.href = 'index.html';
-            }
-        });
-    </script>
+    <script src="../src/js/pages/Auth/login.js"></script>
 </body>
 
 </html>
