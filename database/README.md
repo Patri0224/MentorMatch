@@ -4,15 +4,17 @@ MentorMatch è una piattaforma per la gestione di sessioni di mentorship tra men
 
 ## Requisiti
 
-- PostgreSQL 12 o superiore
+- PostgreSQL 12 o superiores
 
 ### Credenziali di Test
 
 **Mentor:**
+
 - Email: `mario.rossi@mentor.com`
 - Password: `Password123`
 
 **Mentee:**
+
 - Email: `francesco.bruno@mentee.com`
 - Password: `Password123`
 
@@ -21,35 +23,49 @@ MentorMatch è una piattaforma per la gestione di sessioni di mentorship tra men
 ### Tabelle Principali
 
 #### users
+
 Gestione utenti (mentor e mentee)
+
 - **Campi chiave:** email, password, name, role, bio, sector, languages
 - **Funzionalità:** rating automatico, gestione Stripe, notifiche email
 
 #### sessions
+
 Disponibilità temporali dei mentor
+
 - **Campi chiave:** mentor_id, start_time, end_time, duration, available
 - **Constraint:** end_time deve essere maggiore di start_time
 
 #### bookings
+
 Prenotazioni delle sessioni
+
 - **Campi chiave:** session_id, mentor_id, mentee_id, status, note
 - **Stati possibili:** confirmed, completed, cancelled
 
 #### reviews
+
 Recensioni dei mentee per i mentor
+
 - **Campi chiave:** mentor_id, mentee_id, rating (1-5), comment
 - **Trigger:** aggiorna automaticamente il rating del mentor
 
 #### messages
+
 Sistema di messaggistica interna
+
 - **Campi chiave:** sender_id, recipient_id, content, read
 
 #### notifications
+
 Notifiche per gli utenti
+
 - **Tipi:** new_booking, booking_confirmed, new_message, new_review
 
 #### payments
+
 Gestione pagamenti tramite Stripe
+
 - **Stati:** pending, completed, failed, refunded
 
 ### Tabelle di Supporto
@@ -75,7 +91,9 @@ Gestione pagamenti tramite Stripe
 ### Funzioni Utility
 
 #### get_user_stats(user_id)
+
 Restituisce statistiche complete per un utente:
+
 - Total bookings
 - Completed sessions
 - Upcoming sessions
@@ -87,6 +105,7 @@ SELECT * FROM get_user_stats(1);
 ```
 
 #### search_mentors()
+
 Ricerca mentor con filtri avanzati:
 
 ```sql
@@ -101,6 +120,7 @@ SELECT * FROM search_mentors(
 ## Indici per Performance
 
 Il database include indici ottimizzati per:
+
 - Ricerca mentor per settore e rating
 - Query su sessioni disponibili
 - Conversazioni tra utenti (messaggi)
@@ -111,6 +131,7 @@ Il database include indici ottimizzati per:
 ## Dati di Test
 
 Il database viene popolato con:
+
 - **5 Mentor** con diversi settori (Software, Marketing, Data Science, Design, Product)
 - **3 Mentee** interessati a varie aree
 - **300 Sessioni** disponibili (30 giorni × 2 slot/giorno × 5 mentor)
@@ -137,7 +158,7 @@ Il database viene popolato con:
 ### Aggiungere una Migrazione
 
 ```sql
-INSERT INTO schema_migrations (version, name) 
+INSERT INTO schema_migrations (version, name)
 VALUES ('002', 'add_new_feature');
 ```
 
