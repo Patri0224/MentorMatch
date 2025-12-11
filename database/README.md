@@ -4,7 +4,7 @@ MentorMatch è una piattaforma per la gestione di sessioni di mentorship tra men
 
 ## Requisiti
 
-- PostgreSQL 12 o superiores
+- PostgreSQL 12 o superiore
 
 ### Credenziali di Test
 
