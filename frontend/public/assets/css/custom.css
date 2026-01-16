@@ -1,0 +1,56 @@
+/* Custom CSS Variables */
+:root {
+    --brand-primary: #0d6efd; 
+    --brand-secondary: #6c757d;
+    --bg-body: #ffffff;
+    --text-main: #212529;
+}
+[data-bs-theme="dark"] {
+    --bg-body: #121212; 
+    --text-main: #f8f9fa;
+}
+/* Main Styles */
+body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+/* Navbar Styles */
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+/* Theme Toggle Button Styles */
+#theme-toggle {
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.2rem;
+    transition: transform 0.2s ease;
+}
+
+#theme-toggle:hover {
+    color: #fff;
+    transform: scale(1.1); 
+}
+
+/* Header Styles */
+header.bg-light {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+[data-bs-theme="dark"] header.bg-light {
+    background: linear-gradient(135deg, #1f1f1f 0%, #121212 100%) !important;
+    border-bottom-color: #333 !important;
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0, 0.05);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
