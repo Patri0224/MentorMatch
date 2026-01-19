@@ -5,12 +5,17 @@ const AUTH_KEY = "mentorMatch_user";
 const AuthService = {
     // Login
     // Temporanea per test
-    login: function (username, password) {
+    login: async function (username, password) {
 
         let ttl = 3600; // 1 ora in secondi
 
-        const { user, cod } = AuthApi.login(username, password); // Chiamata all'API di login
+        const { user, cod } = await ApiService.login(username, password); // Chiamata all'API di login
+        console.log(cod);
 
+        if (cod != 1) {
+            console.log(cod);            
+            return cod; // Login fallito
+        }
         localStorage.setItem(AUTH_KEY, JSON.stringify(user));
         localStorage.setItem('lastLogin', new Date().toISOString());
         localStorage.setItem('ttl', ttl);
@@ -40,7 +45,7 @@ const AuthService = {
         const lastLogin = new Date(localStorage.getItem('lastLogin'));
         const ttl = parseInt(localStorage.getItem('ttl'), 10) * 1000;
         if (new Date() - lastLogin < ttl) {
-            const cod = AuthApi.refreshToken(this.getUser().username); // Chiamata all'API per refresh token
+            const cod = ApiService.refreshToken(this.getUser().username); // Chiamata all'API per refresh token
             if (cod == 1) {
                 localStorage.setItem('lastLogin', new Date().toISOString());
             }
@@ -74,7 +79,9 @@ function updateNavbarUI() {
         `;
     } else {
         authButtonContainer.innerHTML = `
-            <a class="btn btn-light text-primary fw-bold" href="auth.html">Accedi / Registrati</a>
+            <a class="btn auth-btn fw-bold" href="login.html">
+                            Accedi / Registrati
+                        </a>
         `;
     }
 }
@@ -83,7 +90,7 @@ document.addEventListener('DOMContentLoaded', updateNavbarUI);
 
 function AuthIfNotAuthenticated() {
     if (!AuthService.isLoggedIn()) {
-        window.location.href = 'auth.html';
+        window.location.href = 'login.html';
     }
 }
 function HomepageIfAuthenticated() {

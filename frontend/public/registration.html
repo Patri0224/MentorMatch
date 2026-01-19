@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrati - MentorMatch</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
+    <script src="../src/js/utils.js"></script>
+</head>
+
+<body class="bg-body-tertiary d-flex align-items-center justify-content-center py-5">
+
+    <div class="card shadow p-4" style="max-width: 500px; width: 100%;">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-primary">MentorMatch</h2>
+            <p class="text-body-secondary">Crea il tuo account per iniziare.</p>
+        </div>
+        <div id="alertContainer"></div>
+        <form id="registrationForm">
+            <div class="mb-3">
+                <label for="nameInput" class="form-label">Nome Completo</label>
+                <input type="text" class="form-control" id="nameInput" name="name" placeholder="Es. Mario Rossi"
+                    required>
+            </div>
+
+            <div class="mb-3">
+                <label for="emailInput" class="form-label">Email</label>
+                <input type="email" class="form-control" id="emailInput" name="email" placeholder="mario@esempio.it"
+                    required>
+            </div>
+
+            <div class="mb-3">
+                <label for="passwordInput" class="form-label">Password</label>
+                <input type="password" class="form-control" id="passwordInput" name="password"
+                    placeholder="Minimo 8 caratteri" required>
+            </div>
+            <div class="mb-3">
+                <label for="confirmPasswordInput" class="form-label">Conferma Password</label>
+                <input type="password" class="form-control" id="confirmPasswordInput" name="confirm_password" required>
+                <div class="invalid-feedback">Le password non corrispondono.</div>
+            </div>
+            <div class="mb-3">
+                <label for="roleSelect" class="form-label">Voglio registrarmi come:</label>
+                <select class="form-select" id="roleSelect" name="role" required>
+                    <option value="" selected disabled>Scegli un ruolo...</option>
+                    <option value="mentee">Mentee / apprendista</option>
+                    <option value="mentor">Mentor / insegnante</option>
+                </select>
+            </div>
+
+            <div id="extraFields" style="display: none;">
+                <hr class="my-4">
+
+                <div class="mb-3">
+                    <label for="sectorInput" class="form-label">Settore Professionale</label>
+                    <input type="text" class="form-control" id="sectorInput" name="sector"
+                        placeholder="Es. Sviluppo Web, Design, Marketing">
+                </div>
+                <div class="mb-3">
+                    <label for="bioInput" class="form-label">Bio / Presentazione</label>
+                    <textarea class="form-control" id="bioInput" name="bio" rows="3"
+                        placeholder="Raccontaci qualcosa di te..."></textarea>
+                </div>
+                <div id="mentorOnlyFields" style="display: none;">
+
+                    <div class="mb-3">
+                        <label for="rateInput" class="form-label">Tariffa Oraria (€)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">€</span>
+                            <input type="number" class="form-control" id="rateInput" name="hourly_rate" step="0.01"
+                                value="0.00">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-primary">Registrati</button>
+                <a href="login.html" class="btn btn-outline-secondary">Hai già un account? Accedi</a>
+            </div>
+        </form>
+
+        <div class="text-center mt-3">
+            <a href="index.html" class="small text-body-secondary">Torna alla Home</a>
+        </div>
+    </div>
+
+    <script>
+        const roleSelect = document.getElementById('roleSelect');
+        const extraFields = document.getElementById('extraFields');
+        const mentorOnlyFields = document.getElementById('mentorOnlyFields');
+
+        roleSelect.addEventListener('change', function () {
+            // Mostra la sezione extra se è stato scelto un ruolo
+            if (this.value) {
+                extraFields.style.display = 'block';
+            }
+
+            // Mostra la tariffa oraria solo se il ruolo è mentor
+            if (this.value === 'mentor') {
+                mentorOnlyFields.style.display = 'block';
+            } else {
+                mentorOnlyFields.style.display = 'none';
+            }
+        });
+    </script>
+
+    <script src="assets/js/theme.js"></script>
+    <script src="../src/js/pages/Auth/registration.js"></script>
+</body>
+
+</html>

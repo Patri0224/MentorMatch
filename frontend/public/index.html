@@ -17,7 +17,7 @@
         })();
     </script>
     <script src="../src/js/utils.js"></script>
-    
+
 
 
 </head>
@@ -46,13 +46,16 @@
                     </li>
 
                     <li class="nav-item mx-2">
-                        <button id="theme-toggle" class="btn nav-link" title="Cambia tema">
+                        <button id="theme-toggle" class="btn nav-link" title="Cambia tema"
+                            onclick="changeThemeOnClick()">
                             <i class="bi bi-moon-stars-fill"></i>
                         </button>
                     </li>
 
                     <li class="nav-item ms-lg-2" id="auth-button-container">
-                        <a class="btn btn-light text-primary fw-bold" href="login.html">Accedi / Registrati</a>
+                        <a class="btn auth-btn fw-bold" href="login.html">
+                            Accedi / Registrati
+                        </a>
                     </li>
                 </ul>
             </div>

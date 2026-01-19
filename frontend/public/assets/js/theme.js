@@ -18,11 +18,8 @@ const setTheme = (theme) => {
 const savedTheme = localStorage.getItem('theme') || 'light';
 setTheme(savedTheme);
 
-const themeToggleBtn = document.getElementById('theme-toggle');
-if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        setTheme(newTheme);
-    });
+function changeThemeOnClick() {
+    const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
 }
