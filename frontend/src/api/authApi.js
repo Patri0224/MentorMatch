@@ -32,7 +32,6 @@ const ApiService = {
                 cod: 1
             };
         }
-        return { user: null, cod: 0 };
 
         try {
             const response = await fetch(`${API_BASE_URL}/login.php`, {

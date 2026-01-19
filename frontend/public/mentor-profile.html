@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profilo Mentor - MentorMatch</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
+    <script src="../src/js/utils.js"></script>
+    </head>
+
+<body class="bg-body-tertiary">
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-primary shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">MentorMatch</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="search-mentors.html">Trova un Mentor</a></li>
+                    <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+                    <li class="nav-item mx-2">
+                        <button id="theme-toggle" class="btn nav-link" title="Cambia tema" onclick="changeThemeOnClick()">
+                            <i class="bi bi-moon-stars-fill"></i>
+                        </button>
+                    </li>
+                    <li class="nav-item ms-lg-2" id="auth-button-container">
+                        <a class="btn auth-btn fw-bold" href="login.html">Accedi / Registrati</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-5">
+        <div class="row g-4">
+
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 p-4 mb-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <img id="mentorAvatar" src="https://via.placeholder.com/100" class="rounded-circle me-3 border"
+                            width="100" height="100" alt="Avatar" style="object-fit: cover;">
+                        <div>
+                            <h2 id="mentorName" class="fw-bold mb-0">Caricamento...</h2>
+                            <p id="mentorSector" class="text-primary fw-semibold mb-1"></p>
+                            <div class="text-warning">
+                                <span id="ratingStars"></span>
+                                <span id="reviewCount" class="text-muted small ms-2"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold border-bottom pb-2">Bio</h5>
+                    <p id="mentorBio" class="text-body-secondary"></p>
+
+                    <h5 class="fw-bold mt-4 border-bottom pb-2">Lingue parlate</h5>
+                    <div id="mentorLanguages" class="d-flex gap-2 pt-2"></div>
+                </div>
+
+                <div class="card shadow-sm border-0 p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0">Recensioni Clienti</h5>
+                        <button id="btnOpenReview" class="btn btn-outline-primary btn-sm d-none" data-bs-toggle="modal"
+                            data-bs-target="#reviewModal">Lascia una recensione</button>
+                    </div>
+                    <div id="reviewsList">
+                        </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 p-4 sticky-top" style="top: 90px;">
+                    <div class="text-center mb-4">
+                        <h3 id="hourlyRate" class="fw-bold text-success mb-0">0.00€</h3>
+                        <small class="text-muted text-uppercase fw-bold">Tariffa Oraria</small>
+                    </div>
+
+                    <div class="d-grid gap-2 mb-4">
+                        <button id="btnOpenMessage" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#messageModal">
+                            <i class="bi bi-chat-dots me-2"></i>Invia Messaggio
+                        </button>
+                    </div>
+
+                    <hr>
+
+                    <h6 class="fw-bold mb-3"><i class="bi bi-calendar-check me-2"></i>Slot Disponibili</h6>
+                    
+                    <div id="authAlertBooking" class="alert alert-info small d-none">
+                        <i class="bi bi-info-circle me-1"></i> <a href="login.html" class="alert-link">Accedi</a> per prenotare una lezione.
+                    </div>
+
+                    <div id="sessionsList" class="list-group list-group-flush mb-3">
+                        </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div class="modal fade" id="messageModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Contatta il Mentor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="messageContent" class="form-control" rows="4"
+                        placeholder="Ciao! Vorrei chiederti informazioni riguardo..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary w-100" onclick="sendMessage()">Invia Messaggio</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="reviewModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Valuta la tua esperienza</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3 text-center">
+                        <label class="form-label d-block fw-bold">Voto</label>
+                        <select id="newRating" class="form-select form-select-lg">
+                            <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                            <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                            <option value="3">⭐⭐⭐ (3/5)</option>
+                            <option value="2">⭐⭐ (2/5)</option>
+                            <option value="1">⭐ (1/5)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Commento</label>
+                        <textarea id="newComment" class="form-control" rows="3" placeholder="Com'è andata la lezione?"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary w-100" onclick="submitReview()">Pubblica Recensione</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../src/js/pages/mentor-profile.js"></script>
+</body>
+
+</html>
