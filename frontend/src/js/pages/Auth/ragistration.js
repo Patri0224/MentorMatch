@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Invio in corso...';
 
         try {
+            console.log("Registration data to submit:", data);
             await ApiService.register({
                 ...data,
                 hourly_rate: data.role === 'mentor' ? parseFloat(data.hourly_rate) : 0,
