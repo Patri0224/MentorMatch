@@ -28,8 +28,6 @@ loginForm.addEventListener('submit', async function (e) {
     const cod = await AuthService.login(username, password);
 
     if (cod == 1) {
-
-        sleep(1000);
         window.location.href = 'index.html';
     } else {
         alert('Credenziali non valide. Riprova.');

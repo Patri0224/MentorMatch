@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MentorMatch</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <script src="assets/js/theme.js"></script>
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
+    <script src="../src/js/utils.js"></script>
+</head>
+
+<body class="bg-body-tertiary">
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-primary shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">MentorMatch</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="mentor_catalog.html">Trova un Mentor</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <button id="theme-toggle" class="btn nav-link" title="Cambia tema"
+                            onclick="changeThemeOnClick()">
+                            <i class="bi bi-moon-stars-fill"></i>
+                        </button>
+                    </li>
+                    <li class="nav-item ms-lg-2" id="auth-button-container">
+                        <a class="btn auth-btn fw-bold" href="login.html">Accedi / Registrati</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block bg-body sidebar collapse shadow-sm min-vh-100">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column gap-2" id="dashboardNav">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#profile">
+                                <i class="bi bi-person-circle me-2"></i>Profilo
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#bookings">
+                                <i class="bi bi-calendar-event me-2"></i>Prenotazioni
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#messages">
+                                <i class="bi bi-chat-left-text me-2"></i>Messaggi
+                            </a>
+                        </li>
+                        <li class="nav-item d-none" id="navSessions">
+                            <a class="nav-link" data-bs-toggle="tab" href="#sessions">
+                                <i class="bi bi-clock-history me-2"></i>Gestione Orari
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                <div class="tab-content">
+
+                    <div class="tab-pane fade show active" id="profile">
+                        <div class="card border-0 shadow-sm p-4">
+                            <h4 class="fw-bold mb-4">Impostazioni Profilo</h4>
+                            <form id="profileForm">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Nome Completo</label>
+                                        <input type="text" class="form-control" name="name" id="editName" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold text-muted">Email (Identificativo)</label>
+                                        <input type="email" class="form-control bg-secondary" id="editEmail" readonly>
+                                    </div>
+
+                                    <div class="col-md-12 mt-3">
+                                        <label class="form-label fw-bold text-danger">Cambia Password</label>
+                                        <input type="password" class="form-control" name="password" id="editPassword"
+                                            placeholder="Lascia vuoto per non modificare">
+                                        <small class="text-muted">Inserisci almeno 8 caratteri se desideri
+                                            cambiarla.</small>
+                                    </div>
+
+                                    <div class="col-12 mt-3">
+                                        <label class="form-label fw-bold">Bio</label>
+                                        <textarea class="form-control" name="bio" id="editBio" rows="3"></textarea>
+                                    </div>
+
+                                    <div class="mentor-only d-none row g-3 m-0 p-0 mt-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Settore Professionale</label>
+                                            <input type="text" class="form-control" name="sector" id="editSector"
+                                                placeholder="Es: web design, marketing...">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Tariffa Oraria (€/h)</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">€</span>
+                                                <input type="number" class="form-control" name="hourly_rate"
+                                                    id="editRate" step="0.01">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 mt-3">
+                                        <label class="form-label fw-bold">Link Permanente Video Lezione (Zoom, Meet,
+                                            Teams)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-camera-video"></i></span>
+                                            <input type="url" class="form-control" name="meeting_url"
+                                                id="editMeetingUrl" placeholder="https://meet.google.com/abc-defg-hij">
+                                        </div>
+                                        <small class="text-muted">Questo link verrà mostrato ai tuoi mentee al momento
+                                            della lezione.</small>
+                                    </div>
+                                    <div class="col-12 mt-4 pt-3 border-top">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" name="email_notifications"
+                                                id="editNotif">
+                                            <label class="form-check-label">Ricevi notifiche email per nuove
+                                                prenotazioni e messaggi</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 text-end mt-4">
+                                        <button type="submit" class="btn btn-primary px-5 fw-bold">Salva
+                                            Modifiche</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="bookings">
+                        <div class="card border-0 shadow-sm p-4">
+                            <h4 class="fw-bold mb-4">Le tue Sessioni</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Data e Ora</th>
+                                            <th>Contatto</th>
+                                            <th>Stato</th>
+                                            <th>Azioni</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bookingsTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="sessions">
+                        <div class="card border-0 shadow-sm p-4">
+                            <h4 class="fw-bold mb-4">Aggiungi Disponibilità</h4>
+                            <form id="sessionForm" class="row g-3 align-items-end mb-4">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold">Inizio</label>
+                                    <input type="datetime-local" class="form-control" id="sessionStart" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold">Fine</label>
+                                    <input type="datetime-local" class="form-control" id="sessionEnd" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-success w-100">Aggiungi Slot</button>
+                                </div>
+                            </form>
+                            <div id="mentorSessionsList" class="list-group"></div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="messages">
+                        <div class="card border-0 shadow-sm overflow-hidden" style="height: 600px;">
+                            <div class="row g-0 h-100">
+                                <div class="col-md-4 border-end bg-body">
+                                    <div class="p-3 border-bottom bg-body">
+                                        <h5 class="fw-bold mb-0">Conversazioni</h5>
+                                    </div>
+                                    <div id="conversationList" class="list-group list-group-flush overflow-auto"
+                                        style="max-height: 540px;">
+                                        <div class="text-center py-5 text-muted">Caricamento conversazioni...</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-8 d-flex flex-column bg-body">
+                                    <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
+                                        <div id="chatHeader">
+                                            <span class="text-muted">Seleziona una conversazione per iniziare</span>
+                                        </div>
+                                    </div>
+
+                                    <div id="chatMessages"
+                                        class="flex-grow-1 p-3 overflow-auto d-flex flex-column gap-3 bg-body-tertiary">
+                                        <div class="text-center my-auto text-muted">
+                                            <i class="bi bi-chat-dots display-4 d-block mb-2"></i>
+                                            Seleziona un utente dalla lista a sinistra
+                                        </div>
+                                    </div>
+
+                                    <div class="p-3 border-top">
+                                        <form id="chatForm" class="d-none">
+                                            <div class="input-group">
+                                                <input type="text" id="chatInput" class="form-control"
+                                                    placeholder="Scrivi un messaggio..." autocomplete="off">
+                                                <button class="btn btn-primary" type="submit">
+                                                    <i class="bi bi-send-fill"></i>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../src/js/pages/dashboard.js"></script>
+    <script src="../src/api/api.js"></script>
+</body>
+
+</html>
