@@ -28,7 +28,7 @@ const ApiService = {
         if (username === "admin" && password === "Password.24") {
             console.log("API Login successful for admin");
             return {
-                user: { username: "admin", role: "mentors" },
+                user: { username: "admin", role: "mentor" },
                 cod: 1
             };
         }

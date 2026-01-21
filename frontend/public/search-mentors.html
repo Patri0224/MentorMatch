@@ -71,13 +71,14 @@
                     <div id="sectorError" class="text-danger sx-small d-none">Inserisci un settore valido.</div>
                 </div>
 
-                <div class="col-md-2">
-                    <label class="form-label fw-bold small text-uppercase text-muted">Budget Max (€/h)</label>
-                    <input type="number" class="form-control" id="costFilter" placeholder="Es. 50">
+                <div class="col-md-1">
+                    <label class="form-label fw-bold small text-uppercase text-muted">Budget</label>
+                    <input type="number" class="form-control" id="costFilter" placeholder="Es. 15 (€/h)" min="0"
+                        step="1">
                 </div>
 
-                <div class="col-md-2">
-                    <label class="form-label fw-bold small text-uppercase text-muted">Rating Minimo</label>
+                <div class="col-md-1">
+                    <label class="form-label fw-bold small text-uppercase text-muted">Rating</label>
                     <select class="form-select" id="ratingFilter">
                         <option value="0">Qualsiasi</option>
                         <option value="4">4+ stelle</option>
@@ -85,7 +86,15 @@
                     </select>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">Inizio</label>
+                    <input type="datetime-local" class="form-control" id="rangeStart">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">Fine</label>
+                    <input type="datetime-local" class="form-control" id="rangeEnd">
+                </div>
+                <div class="col-md-2">
                     <label class="form-label fw-bold small text-uppercase text-muted">Disponibilità</label>
                     <div class="dropdown">
                         <button
@@ -118,8 +127,7 @@
                         </ul>
                     </div>
                 </div>
-
-                <div class="col-md-2 d-flex align-items-end">
+                <div class="col-md-1 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100 fw-bold">
                         <i class="bi bi-search me-2"></i>Cerca
                     </button>

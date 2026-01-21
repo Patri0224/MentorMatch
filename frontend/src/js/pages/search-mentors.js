@@ -94,6 +94,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             sector: sectorInput.value.trim().toLowerCase() || null,
             max_hourly_rate: document.getElementById('costFilter').value || null,
             min_rating: parseFloat(document.getElementById('ratingFilter').value) || 0,
+            session_start: document.getElementById('rangeStart').value || null,
+            session_end: document.getElementById('rangeEnd').value || null,
             availability: Array.from(document.querySelectorAll('.time-checkbox:checked')).map(cb => cb.value)
         };
 
