@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Video Lezione - MentorMatch</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body class="bg-dark text-white d-flex align-items-center justify-content-center vh-100">
+
+    <div class="text-center p-5 shadow-lg rounded-4 bg-secondary bg-opacity-10 border border-secondary">
+        <div class="mb-4">
+            <i class="bi bi-person-video3 display-1 text-primary"></i>
+        </div>
+        <h2 class="fw-bold" id="meetingTitle">Preparazione lezione...</h2>
+        <p class="text-light opacity-75 mb-4">Stai per entrare nella video lezione con il tuo mentor.</p>
+        
+        <div id="meetingActions" class="d-none">
+            <a href="#" id="joinBtn" target="_blank" class="btn btn-primary btn-lg px-5 fw-bold">
+                ENTRA ORA <i class="bi bi-box-arrow-up-right ms-2"></i>
+            </a>
+            <div class="mt-4">
+                <a href="dashboard.html" class="text-white-50 small">Torna alla Dashboard</a>
+            </div>
+        </div>
+
+        <div id="meetingLoader" class="spinner-border text-primary" role="status"></div>
+    </div>
+
+    <script src="../src/js/utils.js"></script>
+    <script src="../src/api/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const bookingId = params.get('booking_id');
+
+            try {
+                // Recuperiamo i dati della prenotazione che includono il meeting_url del mentor
+                const booking = await ApiService.getBookingDetails(bookingId);
+                
+                document.getElementById('meetingTitle').innerText = `Lezione con ${booking.mentor_name}`;
+                document.getElementById('joinBtn').href = booking.meeting_url;
+                
+                // Nascondi loader e mostra bottone
+                document.getElementById('meetingLoader').classList.add('d-none');
+                document.getElementById('meetingActions').classList.remove('d-none');
+
+                // Notifica al sistema che la sessione sta iniziando
+                // ApiService.logSessionStart(bookingId);
+
+            } catch (e) {
+                document.getElementById('meetingTitle').innerText = "Errore: Prenotazione non trovata";
+                document.getElementById('meetingLoader').classList.add('d-none');
+            }
+        });
+    </script>
+</body>
+</html>

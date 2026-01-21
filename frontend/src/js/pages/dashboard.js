@@ -28,7 +28,6 @@ function renderRoleSpecificUI(role) {
         document.getElementById('navSessions').classList.remove('d-none');
         document.querySelectorAll('.mentor-only').forEach(el => el.classList.remove('d-none'));
     }
-    document.getElementById('userDisplay').innerText = `Loggato come: ${AuthService.getUser().name}`;
 }
 
 /**
@@ -43,8 +42,10 @@ async function loadUserProfile(userId) {
         document.getElementById('editNotif').checked = data.email_notifications;
 
         if (data.role === 'mentor') {
+            document.getElementById('editLanguage').value = (data.languages && data.languages.length > 0) ? data.languages.join(', ') : '';
             document.getElementById('editSector').value = data.sector || '';
             document.getElementById('editRate').value = data.hourly_rate;
+            document.getElementById('meetingLink').value = data.mentor_meeting_url || '';
         }
     } catch (e) { console.error("Errore caricamento profilo", e); }
 }
@@ -80,7 +81,8 @@ async function handleProfileUpdate(e) {
     if (AuthService.getUser().role === 'mentor') {
         // Normalizzazione settore: tutto minuscolo come richiesto
         payload.sector = data.sector.trim().toLowerCase();
-
+        payload.languages = data.language.split(',').map(lang => lang.trim().toLowerCase()).filter(lang => lang.length > 0);
+        payload.mentor_meeting_url = data.meetingLink.trim();
         // Controllo tariffa
         const rate = parseFloat(data.hourly_rate);
         if (isNaN(rate) || rate < 0) {
@@ -117,31 +119,108 @@ async function handleProfileUpdate(e) {
 /**
  * Carica le prenotazioni dalle tabelle 'bookings' e 'sessions'
  */
+/**
+ * Carica le prenotazioni e genera i pulsanti azione dinamici
+ */
+/**
+ * Versione aggiornata di loadBookings con gestione Pagamenti per Mentee
+ */
 async function loadBookings(userId, role) {
     const tableBody = document.getElementById('bookingsTableBody');
     try {
-        // L'API filtrerà per mentee_id o mentor_id in base al ruolo
+        // Recuperiamo le prenotazioni con informazioni sul pagamento incluse
         const bookings = await ApiService.getUserBookings(userId, role);
 
-        tableBody.innerHTML = bookings.map(b => `
-            <tr>
-                <td>${new Date(b.start_time).toLocaleString()}</td>
-                <td>${role === 'mentor' ? b.mentee_name : b.mentor_name}</td>
-                <td><span class="badge ${getStatusBadge(b.status)}">${b.status}</span></td>
-                <td>
-                    <button class="btn btn-sm btn-outline-danger" onclick="cancelBooking(${b.id})">Annulla</button>
-                    ${b.meeting_url ? `<a href="${b.meeting_url}" class="btn btn-sm btn-success">Vai al Meet</a>` : ''}
-                </td>
-            </tr>
-        `).join('');
-    } catch (e) { tableBody.innerHTML = '<tr><td colspan="4">Errore caricamento.</td></tr>'; }
+        tableBody.innerHTML = bookings.map(b => {
+            const isPaid = b.payment_status === 'completed';
+            const isMentor = role === 'mentor';
+            const isConfirmed = b.status === 'confirmed';
+
+            // Logica dei bottoni azione
+            let actionButtons = '';
+
+            if (isConfirmed) {
+                if (isPaid) {
+                    // Se pagato: Pulsante per entrare nella lezione
+                    actionButtons = `
+                        <a href="meeting.html?booking_id=${b.id}" class="btn btn-sm btn-success fw-bold">
+                            <i class="bi bi-camera-video-fill me-1"></i> Entra
+                        </a>`;
+                } else if (!isMentor) {
+                    // Se Mentee e NON pagato: Pulsante Paga Ora
+                    actionButtons = `
+                        <a href="checkout.html?booking_id=${b.id}" class="btn btn-sm btn-warning fw-bold">
+                            <i class="bi bi-credit-card-fill me-1"></i> Paga Ora
+                        </a>`;
+                } else {
+                    // Se Mentor e NON pagato: In attesa del Mentee
+                    actionButtons = `<span class="badge bg-light text-muted border">In attesa di saldo</span>`;
+                }
+            }
+
+            // Aggiungiamo sempre il tasto annulla se la lezione è nel futuro
+            const isFuture = new Date(b.start_time) > new Date();
+            const cancelButton = (isFuture && isConfirmed)
+                ? `<button class="btn btn-sm btn-outline-danger" onclick="handleCancelBooking(${b.id})">Annulla</button>`
+                : '';
+
+            return `
+                <tr>
+                    <td>
+                        <div class="fw-bold">${new Date(b.start_time).toLocaleDateString()}</div>
+                        <div class="small text-muted">${new Date(b.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                    </td>
+                    <td>
+                        <strong>${isMentor ? b.mentee_name : b.mentor_name}</strong>
+                        <div class="small text-muted">${b.sector || ''}</div>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-column gap-1">
+                            <span class="badge ${getStatusBadge(b.status)}">${b.status}</span>
+                            <span class="badge ${isPaid ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'} small">
+                                ${isPaid ? 'PAGATO' : 'DA SALDARE'}
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            ${actionButtons}
+                            ${cancelButton}
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } catch (e) {
+        tableBody.innerHTML = '<tr><td colspan="4">Errore nel caricamento.</td></tr>';
+    }
 }
 
+/**
+ * Helper per le classi CSS dei badge
+ */
 function getStatusBadge(status) {
     switch (status) {
-        case 'confirmed': return 'bg-success';
-        case 'cancelled': return 'bg-danger';
-        default: return 'bg-secondary';
+        case 'confirmed': return 'bg-success-subtle text-success border border-success-subtle';
+        case 'cancelled': return 'bg-danger-subtle text-danger border border-danger-subtle';
+        case 'completed': return 'bg-primary-subtle text-primary border border-primary-subtle';
+        default: return 'bg-secondary-subtle text-secondary border border-secondary-subtle';
+    }
+}
+
+/**
+ * Gestore cancellazione con conferma
+ */
+async function handleCancelBooking(bookingId) {
+    const reason = prompt("Indica il motivo della cancellazione:");
+    if (reason === null) return; // Utente ha cliccato annulla
+
+    try {
+        await ApiService.cancelBooking(bookingId, reason, AuthService.getUserId());
+        alert("Prenotazione annullata.");
+        location.reload();
+    } catch (e) {
+        alert("Errore: " + e.message);
     }
 }
 let activeChatUserId = null;
@@ -221,7 +300,38 @@ async function refreshMessages() {
         container.scrollTop = container.scrollHeight;
     } catch (e) { console.error(e); }
 }
+/**
+ * Gestisce l'eliminazione definitiva dell'account
+ */
+async function handleDeleteAccount() {
+    // Prima conferma
+    const firstCheck = confirm("ATTENZIONE: Sei sicuro di voler eliminare il tuo account? Questa azione è irreversibile.");
+    if (!firstCheck) return;
 
+    // Seconda conferma (Protezione extra)
+    const securityCheck = prompt("Per confermare l'eliminazione definitiva, scrivi 'ELIMINA' nel campo sottostante:");
+
+    if (securityCheck !== 'ELIMINA') {
+        alert("Operazione annullata: la parola di conferma non è corretta.");
+        return;
+    }
+
+    try {
+        const userId = AuthService.getUserId();
+
+        // Chiamata API alla tabella 'users'
+        await ApiService.deleteAccount(userId);
+
+        alert("Il tuo account è stato eliminato con successo. Ci dispiace vederti andare via!");
+
+        // Pulizia sessione e redirect alla Home
+        AuthService.logout();
+        window.location.href = 'index.html';
+
+    } catch (error) {
+        alert("Errore durante l'eliminazione dell'account: " + error.message);
+    }
+}
 /**
  * Gestisce l'invio di un nuovo messaggio
  */

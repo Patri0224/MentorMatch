@@ -340,6 +340,55 @@ const ApiService = {
             console.error("API Error (message):", error);
             throw error;
         }
+    },
+    /**
+     * DETTAGLI PRENOTAZIONE
+     * Recupera i dettagli completi di una prenotazione
+     * (inclusi dati sessione e utente)
+     */
+    async getBookingDetails(bookingId) {
+        const response = await fetch(`${API_BASE_URL}/bookings/details.php?id=${bookingId}`);
+        if (!response.ok) throw new Error('Dettagli non trovati');
+        return await response.json();
+    },
+    /**
+    * ELIMINA ACCOUNT (Tabella 'users')
+    * Nota: Grazie ai vincoli ON DELETE CASCADE nel tuo DB, 
+    * l'eliminazione dell'utente rimuoverà automaticamente sessioni, messaggi e notifiche collegate.
+    */
+    async deleteAccount(userId) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/users/delete.php`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: userId })
+            });
+
+            if (!response.ok) {
+                const result = await response.json();
+                throw new Error(result.message || 'Impossibile eliminare l\'account');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error("API Error (deleteAccount):", error);
+            throw error;
+        }
+    },
+    /**
+    * Inizia la procedura di pagamento
+    * Restituisce l'URL di Stripe per il redirect
+    */
+    async createStripeSession(bookingId) {
+        const response = await fetch(`${API_BASE_URL}/payments/create_session.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                booking_id: bookingId,
+                success_url: `${window.location.origin}/payment-success.html?booking_id=${bookingId}`,
+                cancel_url: `${window.location.origin}/checkout.html?booking_id=${bookingId}`
+            })
+        });
+        return await response.json();
     }
 };
 
