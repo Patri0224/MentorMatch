@@ -50,10 +50,11 @@ async function loadUserProfile(userId) {
     } catch (e) { console.error("Errore caricamento profilo", e); }
 }
 
-
+const AUTH_KEY = "mentorMatch_user";
 /**
  * Gestisce il salvataggio dei dati del profilo
  */
+
 async function handleProfileUpdate(e) {
     e.preventDefault();
 
@@ -61,52 +62,88 @@ async function handleProfileUpdate(e) {
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
 
-    // 1. Preparazione e Validazione Dati
-    const payload = {
-        name: data.name.trim(),
-        bio: data.bio.trim(),
-        email_notifications: document.getElementById('editNotif').checked
+    // Otteniamo i dati attuali dell'utente per il confronto
+    const currentUser = AuthService.getUser();
+    const payload = {};
+    let hasChanges = false;
+
+    // Funzione helper per aggiungere al payload solo se il valore è cambiato
+    const addIfChanged = (key, newValue, oldValue) => {
+        // Gestione specifica per null/undefined per evitare falsi positivi
+        const normalizedNew = newValue === "" ? null : newValue;
+        const normalizedOld = oldValue === "" ? null : oldValue;
+
+        if (normalizedNew !== normalizedOld) {
+            payload[key] = newValue;
+            hasChanges = true;
+        }
     };
 
-    // Gestione Password (solo se inserita)
-    if (data.password && data.password.length > 0) {
-        if (data.password.length < 8) {
-            alert("La nuova password deve essere di almeno 8 caratteri.");
-            return;
-        }
+    // --- 1. CONFRONTO CAMPI COMUNI ---
+    addIfChanged('name', data.name.trim(), currentUser.name);
+    addIfChanged('bio', data.bio.trim(), currentUser.bio);
+
+    const notifChecked = document.getElementById('editNotif').checked;
+    addIfChanged('email_notifications', notifChecked, currentUser.email_notifications);
+
+    // --- 2. GESTIONE PASSWORD (Solo se scritta e valida) ---
+    if (data.password && data.password.length >= 8) {
         payload.password = data.password;
+        hasChanges = true;
+    } else if (data.password && data.password.length > 0) {
+        alert("La nuova password deve essere di almeno 8 caratteri.");
+        return;
     }
 
-    // Gestione campi Mentor
-    if (AuthService.getUser().role === 'mentor') {
-        // Normalizzazione settore: tutto minuscolo come richiesto
-        payload.sector = data.sector.trim().toLowerCase();
-        payload.languages = data.language.split(',').map(lang => lang.trim().toLowerCase()).filter(lang => lang.length > 0);
-        payload.mentor_meeting_url = data.meetingLink.trim();
-        // Controllo tariffa
-        const rate = parseFloat(data.hourly_rate);
-        if (isNaN(rate) || rate < 0) {
-            alert("Inserisci una tariffa oraria valida.");
-            return;
+    // --- 3. GESTIONE CAMPI MENTOR ---
+    if (currentUser.role === 'mentor') {
+        // Settore
+        const newSector = data.sector.trim().toLowerCase();
+        addIfChanged('sector', newSector, currentUser.sector);
+
+        // Lingue (Confronto tra array)
+        const newLangs = data.language.split(',')
+            .map(lang => lang.trim().toLowerCase())
+            .filter(lang => lang.length > 0);
+
+        // Confrontiamo gli array trasformandoli in stringhe JSON
+        if (JSON.stringify(newLangs.sort()) !== JSON.stringify([...(currentUser.languages || [])].sort())) {
+            payload.languages = newLangs;
+            hasChanges = true;
         }
-        payload.hourly_rate = rate;
+
+        // Meeting URL
+        addIfChanged('mentor_meeting_url', data.meetingLink.trim(), currentUser.mentor_meeting_url);
+
+        // Tariffa Oraria
+        const newRate = parseFloat(data.hourly_rate);
+        if (!isNaN(newRate) && newRate >= 0) {
+            addIfChanged('hourly_rate', newRate, parseFloat(currentUser.hourly_rate));
+        }
     }
 
-    // 2. Invio all'API
+    // --- 4. INVIO ALL'API ---
+    if (!hasChanges) {
+        alert("Nessuna modifica rilevata.");
+        return;
+    }
+
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Salvataggio...';
 
     try {
-        await ApiService.updateUser(AuthService.getUserId(), payload);
+        // Inviamo il payload "snello" (solo i campi cambiati + userId)
+        const result = await ApiService.updateUser(payload, currentUser.token);
 
-        // Feedback positivo
+        // Se il server risponde con il nuovo oggetto utente aggiornato
+        if (result.user) {
+            // Aggiorniamo il localStorage con i dati uniti (vecchi + nuovi)
+            const updatedUser = { ...currentUser, ...result.user };
+            localStorage.setItem('user_data', JSON.stringify(updatedUser));
+        }
+
         alert("Profilo aggiornato con successo!");
-
-        // Puliamo il campo password per sicurezza dopo il cambio
         document.getElementById('editPassword').value = '';
-
-        // Opzionale: aggiorna i dati locali se necessario
-        // AuthService.updateLocalUserData(payload);
 
     } catch (error) {
         alert("Errore durante l'aggiornamento: " + error.message);

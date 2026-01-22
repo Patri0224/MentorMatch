@@ -30,13 +30,15 @@
         <form id="loginForm">
             <div class="mb-3">
                 <label for="usernameInput" class="form-label">E-mail</label>
-                <input type="text" class="form-control" id="usernameInput" placeholder="Es. Mario Rossi" required>
+                <input type="text" class="form-control" id="usernameInput" placeholder="Es. Mario Rossi" name="email"
+                    required>
                 <p id="usernameError" class="text-danger small mt-1 d-none">E-mail non valida.</p>
             </div>
 
             <div class="mb-3">
                 <label for="passwordInput" class="form-label">Password</label>
-                <input type="password" class="form-control" id="passwordInput" placeholder="******" required>
+                <input type="password" class="form-control" id="passwordInput" placeholder="******" name="password"
+                    required>
                 <p id="passwordError" class="text-danger small mt-1 d-none">Password non valida.</p>
             </div>
 

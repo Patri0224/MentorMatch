@@ -1,9 +1,9 @@
-const API_BASE_URL = '/api'; // Cambia con il tuo endpoint reale
+const API_BASE_URL = 'http://localhost:3000/api'; // Cambia con il tuo endpoint reale
 
 const ApiService = {
     async register(userData) {
         try {
-            const response = await fetch(`${API_BASE_URL}/register.php`, {
+            const response = await fetch(`${API_BASE_URL}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -24,7 +24,6 @@ const ApiService = {
     },
     async login(username, password) {
         //test api login
-        console.log("API Login called with:", username, password);
         if (username === "admin" && password === "Password.24") {
             console.log("API Login successful for admin");
             return {
@@ -32,14 +31,14 @@ const ApiService = {
                 cod: 1
             };
         }
-
+        const email = username; // Considera username come email
         try {
-            const response = await fetch(`${API_BASE_URL}/login.php`, {
+            const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ email, password })
             });
             if (!response.ok) {
                 const errorData = await response.json();
@@ -52,48 +51,40 @@ const ApiService = {
             throw error;
         }
     },
-    async refreshToken(username) {
+    async refreshToken(userId, token) {
         try {
-            const response = await fetch(`${API_BASE_URL}/refresh_token.php`, {
+            const response = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username })
+                body: JSON.stringify({ userId, token })
             });
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Errore durante il refresh del token');
             }
             const data = await response.json();
-            return data.cod;
+            return data;
         } catch (error) {
             console.error("API Error:", error);
             throw error;
         }
     },
-
-
-
-
-
-
-
     // --- GESTIONE PROFILO (Tabella 'users') ---
 
     /**
      * Aggiorna i dati dell'utente (bio, settore, tariffa, notifiche, ecc.)
      */
-    async updateUser(userId, userData) {
+    async updateUser(userData, token) {
         try {
-            const response = await fetch(`${API_BASE_URL}/users/update.php`, {
+            const response = await fetch(`${API_BASE_URL}/users/update_profile`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // Se usi token JWT, aggiungilo qui:
-                    // 'Authorization': `Bearer ${AuthService.getToken()}`
+                    "Authorization": "Bearer " + AuthService.getUser().token
                 },
-                body: JSON.stringify({ id: userId, ...userData })
+                body: JSON.stringify({ ...userData })
             });
 
             const result = await response.json();
@@ -123,9 +114,11 @@ const ApiService = {
     /**
      * Recupera la lista delle prenotazioni per Mentor o Mentee
      */
-    async getUserBookings(userId, role) {
+    async getUserBookings(userId, role, token) {
         try {
-            const response = await fetch(`${API_BASE_URL}/bookings/list.php?user_id=${userId}&role=${role}`);
+            const response = await fetch(`${API_BASE_URL}/bookings/list.php?user_id=${userId}&role=${role}`, {
+                headers: { token: token }
+            });
             if (!response.ok) throw new Error('Errore nel recupero prenotazioni');
             return await response.json();
         } catch (error) {
@@ -161,15 +154,19 @@ const ApiService = {
     /**
      * Crea un nuovo slot di disponibilità (Solo Mentor)
      */
+    //timestamp start_time, end_time,
     async createSession(sessionData) {
         try {
-            const response = await fetch(`${API_BASE_URL}/sessions/create.php`, {
+            const response = await fetch(`${API_BASE_URL}/sessions/createSession`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": "Bearer " + AuthService.getUser().token
+                },
                 body: JSON.stringify(sessionData)
             });
             if (!response.ok) throw new Error('Errore nella creazione dello slot');
-            return await response.json();
+            return await response.json();//cod 1 session.id
         } catch (error) {
             console.error("API Error (createSession):", error);
             throw error;
@@ -181,8 +178,12 @@ const ApiService = {
      */
     async deleteSession(sessionId) {
         try {
-            const response = await fetch(`${API_BASE_URL}/sessions/delete.php?id=${sessionId}`, {
-                method: 'DELETE'
+            const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": "Bearer " + AuthService.getUser().token
+                }
             });
             if (!response.ok) throw new Error('Impossibile eliminare lo slot');
             return await response.json();
