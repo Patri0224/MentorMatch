@@ -2,7 +2,7 @@ name: Docker CI
 
 on:
   push:
-    branches: [ "main", "devOps" ]
+    branches: [ "main", "devops" ]
   pull_request:
 
 jobs:
