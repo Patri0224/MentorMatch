@@ -16,7 +16,7 @@ export const registerUser = async (req, res) => {
 
     const lastIdResult = await db.query('SELECT MAX(id) AS max_id FROM users');
     const result = await db.query(
-      'INSERT INTO users (id, email, password, name, role, sector, bio, hourly_rate) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      'INSERT INTO users (id, email, password, name, role, sector, bio, hourly_rate) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
       [lastIdResult.rows[0].max_id + 1, email, hashedPassword, name, role, sector ?? null, bio ?? null, hourly_rate ?? null]
     );
 
