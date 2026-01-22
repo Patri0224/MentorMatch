@@ -51,10 +51,39 @@ export const loginUser = async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    res.status(200).json({ message: 'Login effettuato con successo', token });
+    res.status(200).json({ 
+      message: 'Login effettuato con successo',
+      cod: 1,
+      id: user.id,
+      name: user.name,
+      role: user.role, 
+      token });
 
   } catch (error) {
     console.error('Errore durante il login:', error);
-    res.status(500).json({ message: 'Errore del server' });
+    res.status(500).json({ message: 'Errore del server', cod: 2});
+  }
+};
+
+export const refreshToken = (req, res) => {
+  const { userId, token } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (decoded.userId !== userId) {
+      return res.status(401).json({ message: 'Token non valido' });
+    }
+
+    const newToken = jwt.sign(
+      { userId: decoded.userId, email: decoded.email, role: decoded.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.status(200).json({ token: newToken, cod: 1 });
+  } catch (error) {
+    console.error('Errore durante il refresh del token:', error);
+    res.status(500).json({ message: 'Errore del server', cod: 2 });
   }
 };

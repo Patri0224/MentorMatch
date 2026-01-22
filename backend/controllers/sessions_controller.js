@@ -1,11 +1,14 @@
 import db from '../src/db.js';
 
 export const createSession = async (req, res) => {
-    const mentorId = req.user.id;
-    const { start_time, end_time, available, duration } = req.body;
+    const mentorId = req.user.userId;
+    const { start_time, end_time } = req.body;
 
     const start = new Date(start_time);
     const end = new Date(end_time);
+
+    const duration = (end - start) / (1000 * 60); // durata in minuti
+
 
     if (isNaN(start) || isNaN(end) || start >= end) {
         return res.status(400).json({ message: "Orario di inizio o fine non valido" });
@@ -26,12 +29,12 @@ export const createSession = async (req, res) => {
             SELECT 1
             FROM sessions
             WHERE mentor_id = $1
-                AND available = $2
-                AND end_time < $3 
-                AND start_time > $4
+                AND available = TRUE
+                AND end_time < $2 
+                AND start_time > $3
             LIMIT 1;
             `,
-            [mentorId, available, start, end]
+            [mentorId, end, start]
         );
 
         if (check.rows.length > 0) {
@@ -44,8 +47,8 @@ export const createSession = async (req, res) => {
             VALUES ($1, $2, $3, $4, $5)
             RETURNING *;
             `,
-            [mentorId, start, end, timeduration, available]);
-        res.status(201).json({ message: "Sessione creata!", session: result.rows[0] });
+            [mentorId, start, end, timeduration, TRUE]);
+        res.status(201).json({ message: "Sessione creata!", session: result.rows[0], cod: 1 });
     } catch (error) {
         console.error("Errore durante la creazione della sessione:", error);
         res.status(500).json({ message: "Errore del server durante la creazione della sessione" });

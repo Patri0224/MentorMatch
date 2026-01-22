@@ -1,8 +1,6 @@
 import jwt from "jsonwebtoken";
 
 export function authenticateToken(req, res, next) {
-    const header = req.headers.authorization;
-    console.log("AUTH HEADER RAW:", JSON.stringify(header));
     try {
         const header = req.headers.authorization;
         if (!header) {

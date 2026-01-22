@@ -1,14 +1,19 @@
 import db from "../src/db.js";
+import bcrypt from 'bcrypt';
 
-export const updateMentorProfile = async (req, res) => {
-    const userID = req.user.userId;
+export const updateProfile = async (req, res) => {
+    const userID = req.userId;
 
     const allowedFields = [
         "name",
         "bio",
+        "email_notifications",
+        "password",
         "sector",
-        "hourly_rate",
         "languages",
+        "mentor_meeting_url",
+        "hourly_rate",
+        
     ];
 
     const updates = {};
@@ -18,10 +23,13 @@ export const updateMentorProfile = async (req, res) => {
         }
     }
 
+    updates["password"] = await bcrypt.hash(req.body.password, 10);
+
 
     if (Object.keys(updates).length === 0) {
         return res.status(400).json({ message: "Nessun campo valido fornito per l'aggiornamento" });
     }
+
 
     if (updates.hourly_rate !== undefined && updates.hourly_rate !== null) {
         const n = Number(updates.hourly_rate);
@@ -40,7 +48,7 @@ export const updateMentorProfile = async (req, res) => {
         const query = `
         UPDATE users SET ${setClause} 
         WHERE id = $${values.length} 
-        RETURNING id, email, name, role, sector, hourly_rate, bio, languages`;
+        RETURNING SET ${setClause}`;
         
         const result = await db.query(query, values);
 

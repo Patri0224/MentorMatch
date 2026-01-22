@@ -1,4 +1,5 @@
 import express from 'express';
+import stripeWebhookRouter from '../routes/stripe_webhook_routes.js';
 import cors from 'cors';
 
 import authRoutes from '../routes/auth_routes.js';
@@ -9,8 +10,10 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use("/api/webhooks/stripe", express.raw({ type: 'application/json' }), stripeWebhookRouter);
 
+
+app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/mentors', mentorsRoutes);
