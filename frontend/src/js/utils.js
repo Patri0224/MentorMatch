@@ -50,11 +50,11 @@ const AuthService = {
         const lastLogin = new Date(localStorage.getItem('lastLogin'));
         const ttl = parseInt(localStorage.getItem('ttl'), 10) * 1000;
         if (new Date() - lastLogin < ttl) {
-            const {cod, token} = await ApiService.refreshToken(this.getUser().id, this.getUser().token); // Chiamata all'API per refresh token
+            const { cod, token } = await ApiService.refreshToken(this.getUser().id, this.getUser().token); // Chiamata all'API per refresh token
             if (cod == 1) {
                 localStorage.setItem('lastLogin', new Date().toISOString());
                 localStorage.setItem('token', token);
-                return true; 
+                return true;
             }
             return false;
         } else {
@@ -75,7 +75,7 @@ function updateNavbarUI() {
         authButtonContainer.innerHTML = `
             <div class="dropdown">
                 <button class="btn btn-outline-light dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown">
-                    <i class="bi bi-person-circle me-1"></i> ${user.username}
+                    <i class="bi bi-person-circle me-1"></i> ${user.name}
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>
@@ -95,13 +95,17 @@ function updateNavbarUI() {
 
 document.addEventListener('DOMContentLoaded', updateNavbarUI);
 
-function AuthIfNotAuthenticated() {
-    if (!AuthService.isLoggedIn()) {
+async function AuthIfNotAuthenticated() {
+    const t= await AuthService.isLoggedIn();
+    if (!t) {
+        console.log("false");
         window.location.href = 'login.html';
     }
 }
-function HomepageIfAuthenticated() {
-    if (AuthService.isLoggedIn()) {
+async function HomepageIfAuthenticated() {
+    const t= await AuthService.isLoggedIn();
+    if (t) {
+        console.log("true");
         window.location.href = 'index.html';
     }
 }

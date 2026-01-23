@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trova un Mentor - MentorMatch</title>
 
+    <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+    <link rel="alternate icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="assets/css/custom.css">
@@ -23,7 +25,10 @@
 
     <nav class="navbar navbar-expand-md navbar-dark bg-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="index.html">MentorMatch</a>
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="index.html">
+                <img src="assets/logo.svg" alt="MentorMatch Logo" width="40" height="40" class="me-2">
+                <span>MentorMatch</span>
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -61,24 +66,26 @@
         <div class="card shadow-sm p-4 mb-5 border-0">
             <form id="searchForm" class="row g-3">
 
-                <div class="col-md-3 position-relative">
+                <div class="col-12 col-lg-6 position-relative">
                     <label class="form-label fw-bold small text-uppercase text-muted">Settore</label>
-                    <input type="text" class="form-control" id="sectorFilter" placeholder="Es: web design..."
-                        autocomplete="off">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i
+                                class="bi bi-briefcase text-muted"></i></span>
+                        <input type="text" class="form-control border-start-0" id="sectorFilter"
+                            placeholder="Cosa vuoi imparare? (es: Web Design)" autocomplete="off">
+                    </div>
                     <ul id="suggestionList" class="list-group position-absolute w-100 shadow-sm d-none"
-                        style="z-index: 1000; max-height: 200px; overflow-y: auto; top: 100%;">
-                    </ul>
+                        style="z-index: 1000; max-height: 200px; overflow-y: auto; top: 100%;"></ul>
                     <div id="sectorError" class="text-danger sx-small d-none">Inserisci un settore valido.</div>
                 </div>
 
-                <div class="col-md-1">
-                    <label class="form-label fw-bold small text-uppercase text-muted">Budget</label>
-                    <input type="number" class="form-control" id="costFilter" placeholder="Es. 15 (€/h)" min="0"
-                        step="1">
+                <div class="col-6 col-md-3 col-lg-3">
+                    <label class="form-label fw-bold small text-uppercase text-muted">Budget Max (€/h)</label>
+                    <input type="number" class="form-control" id="costFilter" placeholder="Es. 30" min="0" step="1">
                 </div>
 
-                <div class="col-md-1">
-                    <label class="form-label fw-bold small text-uppercase text-muted">Rating</label>
+                <div class="col-6 col-md-3 col-lg-3">
+                    <label class="form-label fw-bold small text-uppercase text-muted">Rating Minimo</label>
                     <select class="form-select" id="ratingFilter">
                         <option value="0">Qualsiasi</option>
                         <option value="4">4+ stelle</option>
@@ -86,16 +93,18 @@
                     </select>
                 </div>
 
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold">Inizio</label>
+                <div class="col-12 col-md-4 col-lg-3">
+                    <label class="form-label small fw-bold text-uppercase text-muted">Disponibile dal</label>
                     <input type="datetime-local" class="form-control" id="rangeStart">
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold">Fine</label>
+
+                <div class="col-12 col-md-4 col-lg-3">
+                    <label class="form-label small fw-bold text-uppercase text-muted">Al</label>
                     <input type="datetime-local" class="form-control" id="rangeEnd">
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label fw-bold small text-uppercase text-muted">Disponibilità</label>
+
+                <div class="col-12 col-md-4 col-lg-3">
+                    <label class="form-label fw-bold small text-uppercase text-muted">Fascia Oraria</label>
                     <div class="dropdown">
                         <button
                             class="btn btn-outline-secondary dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center"
@@ -127,11 +136,13 @@
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-1 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100 fw-bold">
-                        <i class="bi bi-search me-2"></i>Cerca
+
+                <div class="col-12 col-lg-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100 fw-bold py-2">
+                        <i class="bi bi-search me-2"></i>Cerca Mentor
                     </button>
                 </div>
+
             </form>
         </div>
 
@@ -141,15 +152,18 @@
 
     <footer class="py-4 bg-dark mt-auto">
         <div class="container">
-            <div class="d-flex flex-column align-items-center justify-content-center text-white">
-                <div class="text-center mb-2">
+            <div class="d-flex flex-column align-items-center justify-content-center">
+
+                <div class="text-white text-center mb-2">
                     <span class="fw-bold">Copyright &copy; MentorMatch 2026</span>
                     <span class="mx-2 d-none d-md-inline text-white-50">|</span>
                     <span class="fw-light">Università dell'Insubria, Sede di Como</span>
                 </div>
-                <p class="m-0 text-center text-white-50 small">
-                    Progetto sviluppato da Colombo Patrizio, Felitti Fabio, Iacono Alessandro, ... Mattia
+
+                <p class="m-0 text-center text-white-50 small" style="font-size: 0.85rem;">
+                    Progetto sviluppato da Colombo Patrizio, Felitti Fabio, Gerundino Mattia, Iacono Alessandro.
                 </p>
+
             </div>
         </div>
     </footer>
