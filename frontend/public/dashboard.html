@@ -16,6 +16,7 @@
         })();
     </script>
     <script src="../src/js/utils.js"></script>
+    <script>AuthIfNotAuthenticated();</script>
 </head>
 
 <body class="bg-body-tertiary">
@@ -74,6 +75,11 @@
                         <li class="nav-item d-none" id="navSessions">
                             <a class="nav-link" data-bs-toggle="tab" href="#sessions">
                                 <i class="bi bi-clock-history me-2"></i>Gestione Orari
+                            </a>
+                        </li>
+                        <li class="nav-item d-none" id="navReviews">
+                            <a class="nav-link" data-bs-toggle="tab" href="#reviews">
+                                <i class="bi bi-star me-2"></i>Recensioni
                             </a>
                         </li>
                     </ul>
@@ -255,6 +261,12 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="reviews">
+                        <div class="card border-0 shadow-sm p-4">
+                            <h4 class="fw-bold mb-4">Feedback ricevuti</h4>
+                            <div id="mentorReviewsContainer"></div>
                         </div>
                     </div>
                 </div>

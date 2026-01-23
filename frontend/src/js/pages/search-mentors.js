@@ -102,7 +102,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             // 3. Chiamata API (ApiService dovrà interrogare la funzione SQL search_mentors)
             const mentors = await ApiService.searchMentors(filters);
-
+/*
+id, name, sector, hourly_rate, languages, review_count, rating
+*/
             // 4. Rendering dei risultati
             renderMentorList(mentors);
         } catch (error) {

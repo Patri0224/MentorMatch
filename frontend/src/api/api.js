@@ -27,8 +27,11 @@ const ApiService = {
         if (username === "admin" && password === "Password.24") {
             console.log("API Login successful for admin");
             return {
-                user: { username: "admin", role: "mentor" },
-                cod: 1
+                cod: 1,
+                id: 1,
+                name: "Admin User",
+                role: "mentor",
+                token: "dummy-token-admin"
             };
         }
         const email = username; // Considera username come email
@@ -64,6 +67,7 @@ const ApiService = {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Errore durante il refresh del token');
             }
+            console.log("API Token refreshed");
             const data = await response.json();
             return data;
         } catch (error) {
@@ -110,7 +114,31 @@ const ApiService = {
     },
 
     // --- GESTIONE PRENOTAZIONI (Tabelle 'bookings' + 'sessions') ---
-
+    /**
+        * NUOVA PRENOTAZIONE
+        * Scrive nella tabella 'bookings'
+        */
+    async prenoteBooking(bookingData) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/bookings/checkout`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': 'Bearer ' + AuthService.getUser().token
+                },
+                body: JSON.stringify(bookingData)//sessionId
+            });
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Errore prenotazione');
+            }
+            const result = await response.json();
+            window.location.href = result.checkout_url; 
+        } catch (error) {
+            console.error("API Error (booking):", error);
+            throw error;
+        }
+    },
     /**
      * Recupera la lista delle prenotazioni per Mentor o Mentee
      */
@@ -248,7 +276,7 @@ const ApiService = {
      */
     async getAllSectors() {
         try {
-            const response = await fetch(`${API_BASE_URL}/mentors/sectors.php`);
+            const response = await fetch(`${API_BASE_URL}/mentors/get-sector`);
             if (!response.ok) throw new Error('Errore caricamento settori');
             return await response.json(); // Restituisce un array di stringhe
         } catch (error) {
@@ -302,27 +330,7 @@ const ApiService = {
         }
     },
 
-    /**
-     * NUOVA PRENOTAZIONE
-     * Scrive nella tabella 'bookings'
-     */
-    async createBooking(bookingData) {
-        try {
-            const response = await fetch(`${API_BASE_URL}/bookings/create.php`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(bookingData)
-            });
-            if (!response.ok) {
-                const err = await response.json();
-                throw new Error(err.message || 'Errore prenotazione');
-            }
-            return await response.json();
-        } catch (error) {
-            console.error("API Error (booking):", error);
-            throw error;
-        }
-    },
+
 
     /**
      * INVIA MESSAGGIO

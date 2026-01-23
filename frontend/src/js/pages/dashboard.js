@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderRoleSpecificUI(user.role);
     await loadUserProfile(user.id);
     await loadBookings(user.id, user.role);
-
     // Gestore salvataggio profilo
     document.getElementById('profileForm').addEventListener('submit', handleProfileUpdate);
     document.querySelector('a[href="#messages"]').addEventListener('shown.bs.tab', loadConversations);
@@ -45,15 +44,13 @@ async function loadUserProfile(userId) {
             document.getElementById('editLanguage').value = (data.languages && data.languages.length > 0) ? data.languages.join(', ') : '';
             document.getElementById('editSector').value = data.sector || '';
             document.getElementById('editRate').value = data.hourly_rate;
-            document.getElementById('meetingLink').value = data.mentor_meeting_url || '';
+            document.getElementById('editMeetingUrl').value = data.mentor_meeting_url || '';
         }
     } catch (e) { console.error("Errore caricamento profilo", e); }
 }
-
-const AUTH_KEY = "mentorMatch_user";
 /**
- * Gestisce il salvataggio dei dati del profilo
- */
+* Gestisce il salvataggio dei dati del profilo
+*/
 
 async function handleProfileUpdate(e) {
     e.preventDefault();
@@ -262,6 +259,53 @@ async function handleCancelBooking(bookingId) {
 }
 let activeChatUserId = null;
 
+/**
+ * Carica gli slot di disponibilità creati dal mentor
+ */
+async function loadMentorSessions(mentorId) {
+    const list = document.getElementById('mentorSessionsList');
+    try {
+        const sessions = await ApiService.getMentorSessions(mentorId);
+        list.innerHTML = sessions.map(s => `
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="fw-bold">${new Date(s.start_time).toLocaleDateString()}</span> 
+                    dalle ${new Date(s.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} 
+                    alle ${new Date(s.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    ${s.available ? '<span class="badge bg-success ms-2">Libero</span>' : '<span class="badge bg-secondary ms-2">Prenotato</span>'}
+                </div>
+                <button class="btn btn-sm btn-outline-danger" onclick="handleDeleteSession(${s.id})" ${!s.available ? 'disabled' : ''}>
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `).join('');
+    } catch (e) { list.innerHTML = '<p class="text-danger">Errore caricamento sessioni.</p>'; }
+}
+
+/**
+ * Aggiunge un nuovo slot (Tabella 'sessions')
+ */
+async function handleAddSession(e) {
+    e.preventDefault();
+    const start = document.getElementById('sessionStart').value;
+    const end = document.getElementById('sessionEnd').value;
+
+    if (new Date(start) >= new Date(end)) {
+        alert("L'orario di fine deve essere successivo a quello di inizio.");
+        return;
+    }
+
+    try {
+        await ApiService.createSession({
+            mentor_id: AuthService.getUser().id,
+            start_time: start,
+            end_time: end,
+            duration: Math.round((new Date(end) - new Date(start)) / 60000)
+        });
+        alert("Slot aggiunto!");
+        loadMentorSessions(AuthService.getUser().id);
+    } catch (e) { alert("Errore: " + e.message); }
+}
 
 
 /**
