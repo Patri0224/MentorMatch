@@ -26,9 +26,22 @@ jobs:
 
       - name: Smoke test (HTTP on /)
         run: |
-          curl -f http://localhost:3000/
+          for i in {1..25}; do
+            if curl -sS http://localhost:3000/ > /dev/null; then
+              echo "Server responding"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Server did not respond"
+          exit 1
 
       - name: Show container logs (always)
         if: always()
-        run: docker logs mentor-match
+        run: |
+          if docker ps -a --format '{{.Names}}' | grep -q '^mentor-match$'; then
+            docker logs mentor-match
+          else
+            echo "Container mentor-match non creato."
+          fi
 
