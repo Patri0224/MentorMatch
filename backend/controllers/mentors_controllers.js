@@ -46,3 +46,40 @@ export const getSectors = async (req, res) => {
         res.status(500).json({ message: "Errore del server durante il recupero dei settori" });
     }
 }
+
+export const getMentorById = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await db.query(
+            `SELECT id, name, bio, sector, hourly_rate, reviews_count, avatar_url, rating, languages
+            FROM users 
+            WHERE id = $1 AND role = 'mentor'`,
+            [id]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Mentor non trovato" });
+        }
+        res.json({ mentor: result.rows[0] });
+    } catch (error) {
+        console.error("Errore durante il recupero del mentor:", error);
+        res.status(500).json({ message: "Errore del server durante il recupero del mentor" });
+    }   
+}
+
+export const getMentorsReviews = async (req, res) => {
+    const { mentorId } = req.params;
+    try { 
+        const result = await db.query(
+            `SELECT r.id, r.mentee_id, u.name AS mentee_name, r.rating, r.comment, r.response, r.created_at
+            FROM reviews r
+            JOIN users u ON r.mentee_id = u.id
+            WHERE r.mentor_id = $1
+            ORDER BY r.created_at DESC`,
+            [mentorId]
+        );
+        res.json({ reviews: result.rows });
+    } catch (error) {
+        console.error("Errore durante il recupero delle recensioni del mentor:", error);
+        res.status(500).json({ message: "Errore del server durante il recupero delle recensioni del mentor" });
+    }
+}

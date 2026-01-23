@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import db from '../src/db.js';
+import { enqueueEmail } from '../src/email/email_service.js';
 
 export const registerUser = async (req, res) => {
   const { name, email, password, role, sector, bio, hourly_rate } = req.body;
@@ -20,9 +21,16 @@ export const registerUser = async (req, res) => {
       [lastIdResult.rows[0].max_id + 1, email, hashedPassword, name, role, sector ?? null, bio ?? null, hourly_rate ?? null]
     );
 
-    res.status(201).json({ message: 'Utente registrato con successo', 
-    user: result.rows[0] 
-  });
+
+    await enqueueEmail({
+      type: 'welcome',
+      recipient: result.rows[0].email,
+      data: { name: result.rows[0].name }
+    });
+    res.status(201).json({
+      message: 'Utente registrato con successo',
+      user: result.rows[0]
+    });
 
   } catch (error) {
     console.error('Errore durante la registrazione:', error);
@@ -34,7 +42,7 @@ export const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
     const result = await db.query('SELECT * FROM users WHERE email = $1',
-    [email]);
+      [email]);
     if (result.rows.length === 0) {
       return res.status(400).json({ message: 'Credenziali non valide' });
     }
@@ -51,17 +59,18 @@ export const loginUser = async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    res.status(200).json({ 
+    res.status(200).json({
       message: 'Login effettuato con successo',
       cod: 1,
       id: user.id,
       name: user.name,
-      role: user.role, 
-      token });
+      role: user.role,
+      token
+    });
 
   } catch (error) {
     console.error('Errore durante il login:', error);
-    res.status(500).json({ message: 'Errore del server', cod: 2});
+    res.status(500).json({ message: 'Errore del server', cod: 2 });
   }
 };
 

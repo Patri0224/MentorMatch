@@ -1,6 +1,7 @@
 import db from "../src/db.js";
 
 import Stripe from "stripe";
+import { enqueueEmail } from "../src/email/email_service.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -37,15 +38,16 @@ export const createCheckoutBooking = async (req, res) => {
             [session.id]
         );
 
-        
+
         const bRes = await db.query(
             `
             INSERT INTO bookings (mentee_id, mentor_id, session_id, note, status)
             VALUES ($1, $2, $3, $4, 'confirmed')
             RETURNING id
             `,
-            [menteeId,session.mentor_id, session.id, note || null]
+            [menteeId, session.mentor_id, session.id, note || null]
         );
+
 
         const bookingId = bRes.rows[0].id;
 
@@ -99,14 +101,169 @@ export const createCheckoutBooking = async (req, res) => {
         );
         await db.query('COMMIT');
 
+        //Mail di notifica avvenuta prenotazione
+        const userResult = await db.query(
+            `
+            SELECT email, name, email_notifications
+            FROM users
+            WHERE id = $1 AND email_notifications = TRUE
+            `,
+            [req.user.userId]
+        );
+
+        if (userResult.rows.length > 0) {
+            const ts = new Date(session.start_time);
+            const date = ts.toLocaleDateString("it-IT");
+            const time = ts.toLocaleTimeString("it-IT", {
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+            await enqueueEmail({
+                type: 'booking_confirmation',
+                recipient: req.user.email,
+                data: { name: req.user.name, mentorName: session.mentor_name, date: date, time: time }
+            });
+        }
         return res.status(201).json({
             checkoutUrl: checkoutSession.url,
             booking_id: bookingId,
         });
     } catch (error) {
-        try { await db.query('ROLLBACK'); } 
+        try { await db.query('ROLLBACK'); }
         catch (e) { console.error('Rollback error:', e); }
         console.error("Errore durante la creazione del checkout:", error);
         return res.status(500).json({ error: "Errore interno del server." });
     }
 };
+
+export const getUserBookings = async (req, res) => {
+    const bookingId = Number(req.params.bookingId);
+    const userId = req.user.id;
+
+    try {
+        const result = await db.query(
+            `
+            SELECT * FROM bookings
+            WHERE id = $1 AND (mentee_id = $2 OR mentor_id = $2)
+            `,
+            [bookingId, userId]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Prenotazione non trovata!" });
+        }
+        res.json({ booking: result.rows });
+    } catch (error) {
+        console.error("Errore durante il recupero dei dettagli della prenotazione:", error);
+        res.status(500).json({ error: "Errore del server durante il recupero dei dettagli della prenotazione." });
+    }
+};
+
+export const cancelBooking = async (req, res) => {
+    const userId = req.user.userId;
+  const bookingId = Number(req.params.id);
+  const { reason } = req.body ?? {};
+
+  await db.query("BEGIN");
+
+  const bookingCheck = await db.query(
+        `
+        SELECT mentee_id, mentor_id, session_id, status
+        FROM bookings
+        WHERE id = $1
+        `,
+        [bookingId]
+    );
+
+    if (bookingCheck.rows.length === 0) {
+        await db.query('ROLLBACK');
+        return res.status(404).json({ error: "Prenotazione non trovata!" });
+    }
+
+    const booking = bookingCheck.rows[0];
+    if (booking.mentee_id !== userId && booking.mentor_id !== userId) {
+        await db.query('ROLLBACK');
+        return res.status(403).json({ error: "Non autorizzato a cancellare questa prenotazione!" });
+    }
+
+    if (booking.status === 'canceled') {
+        await db.query('ROLLBACK');
+        return res.status(400).json({ error: "La prenotazione è già stata cancellata!" });
+    }
+
+    if (booking.status === 'completed') {
+        await db.query('ROLLBACK');
+        return res.status(400).json({ error: "Impossibile cancellare una prenotazione completata!" });
+    }
+
+
+  // 1) prendo booking + payment
+  const infoRes = await db.query(
+    `
+    SELECT b.id, b.status, b.mentor_id, b.mentee_id, b.session_id,
+           p.id AS payment_id, p.status AS payment_status, p.amount, p.stripe_session_id
+    FROM bookings b
+    LEFT JOIN payments p ON p.booking_id = b.id
+    WHERE b.id = $1
+    FOR UPDATE
+    `,
+    [bookingId]
+  );
+
+  if (infoRes.rows.length === 0) { await db.query("ROLLBACK"); return res.status(404).json({error:"Booking non trovata"}); }
+
+  const row = infoRes.rows[0];
+  if (row.mentor_id !== userId && row.mentee_id !== userId) {
+    await db.query("ROLLBACK"); return res.status(403).json({error:"Non autorizzato"});
+  }
+
+  // 2) se pagamento completato => refund
+  if (row.payment_status === "completed" && row.stripe_session_id) {
+    // Recupero checkout session per ottenere payment_intent
+    const checkout = await stripe.checkout.sessions.retrieve(row.stripe_session_id);
+    const paymentIntentId = checkout.payment_intent;
+
+    // Creo refund (totale). Stripe supporta refund via payment_intent. :contentReference[oaicite:2]{index=2}
+    const refund = await stripe.refunds.create({
+      payment_intent: paymentIntentId,
+      reason: "requested_by_customer", // o "duplicate"/"fraudulent"
+      // amount: Math.round(Number(row.amount) * 100) // se vuoi parziale
+      metadata: { booking_id: String(bookingId) },
+    });
+
+    // aggiorno DB
+    await db.query(
+      `
+      UPDATE payments
+      SET status = 'refunded',
+          refunded_at = NOW(),
+          refund_reason = $1,
+          stripe_payment_intent_id = $2,
+          transaction_id = COALESCE(transaction_id, $3)
+      WHERE id = $4
+      `,
+      [reason ?? null, paymentIntentId, refund.id, row.payment_id]
+    );
+  }
+
+  // 3) cancello booking + rilascio session
+  await db.query(
+    `
+    UPDATE bookings
+    SET status='cancelled',
+        cancellation_reason=$1,
+        cancelled_by=$2,
+        cancelled_at=NOW()
+    WHERE id=$3
+    `,
+    [reason ?? null, userId, bookingId]
+  );
+
+  await db.query(`UPDATE sessions SET available = TRUE WHERE id = $1`, [row.session_id]);
+
+  await db.query("COMMIT");
+  return res.json({ message: "Booking cancellata (e rimborsata se pagata)" });
+};
+
+
+
+ 

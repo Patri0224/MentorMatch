@@ -1,9 +1,11 @@
 import express from 'express';
 
 import { autenticateToken } from '../middleware/auth_middleware.js';
-import { createCheckoutBooking } from '../controllers/bookings_controllers.js';
+import { cancelBooking, createCheckoutBooking, getUserBookings } from '../controllers/bookings_controllers.js';
 
 const router = express.Router();
 
 router.post('/checkout', autenticateToken, createCheckoutBooking);
+router.post('/user_bookings', autenticateToken, getUserBookings);
+router.post('/cancel_booking', autenticateToken, cancelBooking);
 export default router;
