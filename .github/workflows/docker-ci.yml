@@ -2,70 +2,29 @@ name: Docker CI
 
 on:
   push:
-    branches: [ "main", "devops" ]
+    branches: [ "main", "devops", "devOps", "devops-ci" ]
   pull_request:
 
 jobs:
   docker-build-and-smoke-test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Build Docker image
-        run: |
-          docker build -t mentor-match ./backend
+        run: docker build -t mentor-match ./backend
 
       - name: Run container
         run: docker run -d --name mentor-match -p 3000:3000 -e PORT=3000 mentor-match
-        
-      - name: Debug - docker ps
-        if: always()
-        run: docker ps -a
 
-      - name: Debug - inspect container
-        if: always()
+      - name: Smoke test
         run: |
-          docker inspect mentor-match --format='Status={{.State.Status}} ExitCode={{.State.ExitCode}} Error={{.State.Error}}'
-
-      - name: Debug - logs
-        if: always()
-        run: docker logs mentor-match || true
-
-      - name: Debug container status
-        if: always()
-        run: |
-          docker ps -a
-          docker inspect mentor-match --format='State={{.State.Status}} ExitCode={{.State.ExitCode}}'
-
-      - name: Debug container logs
-        if: always()
-        run: |
-          docker logs mentor-match || true
-
-
-      - name: Wait for server to start
-        run: sleep 10
-
-      - name: Smoke test (HTTP on /)
-        run: |
-          for i in {1..25}; do
-            if curl -sS http://localhost:3000/ > /dev/null; then
-              echo "Server responding"
+          for i in {1..30}; do
+            if curl -sS http://localhost:3000/health > /dev/null; then
+              echo "OK"
               exit 0
             fi
             sleep 1
           done
-          echo "Server did not respond"
+          docker logs mentor-match
           exit 1
-
-      - name: Show container logs (always)
-        if: always()
-        run: |
-          if docker ps -a --format '{{.Names}}' | grep -q '^mentor-match$'; then
-            docker logs mentor-match
-          else
-            echo "Container mentor-match non creato."
-          fi
-
