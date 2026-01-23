@@ -19,6 +19,17 @@ jobs:
 
       - name: Run container
         run: docker run -d --name mentor-match -p 3000:3000 -e PORT=3000 mentor-match
+     
+      - name: Debug container status
+        if: always()
+        run: |
+          docker ps -a
+          docker inspect mentor-match --format='State={{.State.Status}} ExitCode={{.State.ExitCode}}'
+
+      - name: Debug container logs
+        if: always()
+        run: |
+          docker logs mentor-match || true
 
 
       - name: Wait for server to start
