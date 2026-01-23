@@ -2,9 +2,12 @@ import express from 'express';
 import stripeWebhookRouter from '../routes/stripe_webhook_routes.js';
 import cors from 'cors';
 
+import "dotenv/config";
+
 import authRoutes from '../routes/auth_routes.js';
 import usersRoutes from '../routes/users_routes.js';
 import mentorsRoutes from '../routes/mentors_routes.js';
+
 
 const app = express();
 
@@ -19,7 +22,7 @@ app.use('/api/users', usersRoutes);
 app.use('/api/mentors', mentorsRoutes);
 app.use('/api/sessions', mentorsRoutes);
 
-
+app.get("/health", (req, res) => res.status(200).send("ok"));
 
 const PORT = process.env.PORT || 3000;
 
