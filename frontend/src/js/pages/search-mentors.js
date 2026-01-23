@@ -153,10 +153,6 @@ id, name, sector, hourly_rate, languages, review_count, rating
                                 </div>
                             </div>
                             
-                            <p class="card-text text-secondary small mb-3" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
-                                ${mentor.bio || 'Nessuna descrizione fornita.'}
-                            </p>
-                            
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="small">
                                     ${starsHtml}

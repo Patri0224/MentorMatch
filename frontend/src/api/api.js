@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3000/api'; // Cambia con il tuo endpoint reale
+const API_BASE_URL = 'http://localhost:10000/api'; // Cambia con il tuo endpoint reale
 
 const ApiService = {
     async register(userData) {
@@ -80,7 +80,7 @@ const ApiService = {
     /**
      * Aggiorna i dati dell'utente (bio, settore, tariffa, notifiche, ecc.)
      */
-    async updateUser(userData, token) {
+    async updateUser(userData) {
         try {
             const response = await fetch(`${API_BASE_URL}/users/update_profile`, {
                 method: 'POST',
@@ -102,9 +102,16 @@ const ApiService = {
     /**
      * Ottiene le statistiche dell'utente (chiama la funzione SQL get_user_stats)
      */
-    async getUserStats(userId) {
+    async getUserStats() {//total_bookings,completed_sessions,upcoming_sessions,total_spent,avg_rating
         try {
-            const response = await fetch(`${API_BASE_URL}/users/stats.php?id=${userId}`);
+            const response = await fetch(`${API_BASE_URL}/users/stats`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + AuthService.getUser().token
+                },
+                body: null
+            });
             if (!response.ok) throw new Error('Errore nel recupero statistiche');
             return await response.json();
         } catch (error) {
@@ -120,7 +127,7 @@ const ApiService = {
         */
     async prenoteBooking(bookingData) {
         try {
-            const response = await fetch(`${API_BASE_URL}/bookings/checkout`, {
+            const response = await fetch(`${API_BASE_URL} / bookings / checkout`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -133,7 +140,7 @@ const ApiService = {
                 throw new Error(err.message || 'Errore prenotazione');
             }
             const result = await response.json();
-            window.location.href = result.checkout_url; 
+            window.location.href = result.checkout_url;
         } catch (error) {
             console.error("API Error (booking):", error);
             throw error;
@@ -142,10 +149,15 @@ const ApiService = {
     /**
      * Recupera la lista delle prenotazioni per Mentor o Mentee
      */
-    async getUserBookings(userId, role, token) {
+    async getUserBookings() {
         try {
-            const response = await fetch(`${API_BASE_URL}/bookings/list.php?user_id=${userId}&role=${role}`, {
-                headers: { token: token }
+            const response = await fetch(`${API_BASE_URL} / bookings / user_bookings`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': 'Bearer ' + AuthService.getUser().token
+                },
+                body: null
             });
             if (!response.ok) throw new Error('Errore nel recupero prenotazioni');
             return await response.json();
@@ -156,17 +168,20 @@ const ApiService = {
     },
 
     /**
-     * Annulla una prenotazione (aggiorna 'bookings' e libera 'sessions')
+     * Annulla una prenotazione (aggiorna 'bookings' e libera 'sessions') senza reso
      */
-    async cancelBooking(bookingId, reason, userId) {
+    async cancelBooking(bookingId, reason) {
         try {
-            const response = await fetch(`${API_BASE_URL}/bookings/cancel.php`, {
+            const response = await fetch(`${API_BASE_URL} / bookings / cancel_booking`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': 'Bearer ' + AuthService.getUser().token
+                },
                 body: JSON.stringify({
                     booking_id: bookingId,
                     reason: reason,
-                    cancelled_by: userId
+                    cancelled_by: AuthService.getUser().id
                 })
             });
             if (!response.ok) throw new Error('Impossibile annullare la prenotazione');
@@ -185,7 +200,7 @@ const ApiService = {
     //timestamp start_time, end_time,
     async createSession(sessionData) {
         try {
-            const response = await fetch(`${API_BASE_URL}/sessions/createSession`, {
+            const response = await fetch(`${API_BASE_URL} / sessions / createSession`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -206,14 +221,14 @@ const ApiService = {
      */
     async deleteSession(sessionId) {
         try {
-            const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}`, {
+            const response = await fetch(`${API_BASE_URL} / sessions / ${sessionId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                     "Authorization": "Bearer " + AuthService.getUser().token
                 }
             });
-            if (!response.ok) throw new Error('Impossibile eliminare lo slot');
+            if (!response.ok) throw new Error('Impossibile eliminare lo slot' + response.status + response.error);
             return await response.json();
         } catch (error) {
             console.error("API Error (deleteSession):", error);
@@ -222,13 +237,41 @@ const ApiService = {
     },
 
     // --- MESSAGGISTICA (Tabella 'messages') ---
-
+    /**
+         * INVIA MESSAGGIO
+         * Scrive nella tabella 'messages'
+         */
+    async postMessage(messageData) {
+        try {
+            const response = await fetch(`${API_BASE_URL} / messages / post_message`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': 'Bearer ' + AuthService.getUser().token
+                },
+                body: JSON.stringify(messageData)
+            });
+            if (!response.ok) throw new Error('Errore invio messaggio');
+            return await response.json();
+        } catch (error) {
+            console.error("API Error (message):", error);
+            throw error;
+        }
+    },
     /**
      * Recupera la conversazione o la lista messaggi dell'utente
      */
-    async getMessages(userId) {
+
+    async getMessages() {
         try {
-            const response = await fetch(`${API_BASE_URL}/messages/list.php?user_id=${userId}`);
+            const response = await fetch(`${API_BASE_URL} / messages /get_messages`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": "Bearer " + AuthService.getUser().token
+                },
+                body: null
+            });
             if (!response.ok) throw new Error('Errore nel recupero messaggi');
             return await response.json();
         } catch (error) {
@@ -240,15 +283,38 @@ const ApiService = {
     /**
      * Segna un messaggio come letto (aggiorna 'read' e 'read_at')
      */
-    async markMessageAsRead(messageId) {
+    async markMessageAsRead(otherUserId) {
         try {
-            await fetch(`${API_BASE_URL}/messages/read.php`, {
+            await fetch(`${API_BASE_URL} / messages / mark-as-read`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: messageId })
+                headers: {
+                    'Content-Type': 'application/json',
+                    "authorization": "Bearer " + AuthService.getUser().token
+                },
+                body: JSON.stringify({ other_user_id: otherUserId })
             });
         } catch (error) {
             console.error("API Error (readMessage):", error);
+        }
+    },
+    /**
+     * prende tutti i messaggi tra due utenti
+     */
+    async getChatHistory(otherUserId) {
+        try {
+            const response = await fetch(`${API_BASE_URL} / messages / get_chat_history`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "authorization": "Bearer " + AuthService.getUser().token
+                },
+                body: JSON.stringify({ other_user_id: otherUserId })
+            });
+            if (!response.ok) throw new Error('Errore nel recupero della chat history');
+            return await response.json();
+        } catch (error) {
+            console.error("API Error (getChatHistory):", error);
+            return [];
         }
     },
     /**
@@ -257,7 +323,7 @@ const ApiService = {
      */
     async searchMentors(filters) {
         try {
-            const response = await fetch(`${API_BASE_URL}/mentors/search.php`, {
+            const response = await fetch(`${API_BASE_URL} / mentors / search`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(filters)
@@ -276,7 +342,7 @@ const ApiService = {
      */
     async getAllSectors() {
         try {
-            const response = await fetch(`${API_BASE_URL}/mentors/get-sector`);
+            const response = await fetch(`${API_BASE_URL} / mentors / get-sector`);
             if (!response.ok) throw new Error('Errore caricamento settori');
             return await response.json(); // Restituisce un array di stringhe
         } catch (error) {
@@ -291,7 +357,7 @@ const ApiService = {
      */
     async getMentorById(id) {
         try {
-            const response = await fetch(`${API_BASE_URL}/mentors/get_profile.php?id=${id}`);
+            const response = await fetch(`${API_BASE_URL} / mentors / get-mentor / ${id}`);
             if (!response.ok) throw new Error('Profilo non trovato');
             return await response.json();
         } catch (error) {
@@ -306,7 +372,7 @@ const ApiService = {
      */
     async getMentorSessions(mentorId) {
         try {
-            const response = await fetch(`${API_BASE_URL}/sessions/get_available.php?mentor_id=${mentorId}`);
+            const response = await fetch(`${API_BASE_URL} / sessions / mentor/ ${mentorId}`);
             if (!response.ok) throw new Error('Errore caricamento sessioni');
             return await response.json();
         } catch (error) {
@@ -321,7 +387,7 @@ const ApiService = {
      */
     async getMentorReviews(mentorId) {
         try {
-            const response = await fetch(`${API_BASE_URL}/reviews/get_by_mentor.php?mentor_id=${mentorId}`);
+            const response = await fetch(`${API_BASE_URL} / mentors /reviews/${mentorId}`);
             if (!response.ok) throw new Error('Errore caricamento recensioni');
             return await response.json();
         } catch (error) {
@@ -332,31 +398,15 @@ const ApiService = {
 
 
 
+
     /**
-     * INVIA MESSAGGIO
-     * Scrive nella tabella 'messages'
-     */
-    async postMessage(messageData) {
-        try {
-            const response = await fetch(`${API_BASE_URL}/messages/send.php`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(messageData)
-            });
-            if (!response.ok) throw new Error('Errore invio messaggio');
-            return await response.json();
-        } catch (error) {
-            console.error("API Error (message):", error);
-            throw error;
-        }
-    },
-    /**
+     * inutile
      * DETTAGLI PRENOTAZIONE
      * Recupera i dettagli completi di una prenotazione
      * (inclusi dati sessione e utente)
      */
     async getBookingDetails(bookingId) {
-        const response = await fetch(`${API_BASE_URL}/bookings/details.php?id=${bookingId}`);
+        const response = await fetch(`${API_BASE_URL} / bookings / details.php ? id = ${bookingId}`);
         if (!response.ok) throw new Error('Dettagli non trovati');
         return await response.json();
     },
@@ -365,16 +415,20 @@ const ApiService = {
     * Nota: Grazie ai vincoli ON DELETE CASCADE nel tuo DB, 
     * l'eliminazione dell'utente rimuoverà automaticamente sessioni, messaggi e notifiche collegate.
     */
-    async deleteAccount(userId) {
+    async deleteAccount(confirmDeletePassword) {
         try {
-            const response = await fetch(`${API_BASE_URL}/users/delete.php`, {
+            const response = await fetch(`${API_BASE_URL} / users / delete_account`, {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: userId })
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': 'Bearer ' + AuthService.getUser().token
+                },
+                body: JSON.stringify({ confirmDeletePassword })
             });
 
             if (!response.ok) {
                 const result = await response.json();
+
                 throw new Error(result.message || 'Impossibile eliminare l\'account');
             }
             return await response.json();
@@ -384,20 +438,43 @@ const ApiService = {
         }
     },
     /**
-    * Inizia la procedura di pagamento
-    * Restituisce l'URL di Stripe per il redirect
-    */
-    async createStripeSession(bookingId) {
-        const response = await fetch(`${API_BASE_URL}/payments/create_session.php`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                booking_id: bookingId,
-                success_url: `${window.location.origin}/payment-success.html?booking_id=${bookingId}`,
-                cancel_url: `${window.location.origin}/checkout.html?booking_id=${bookingId}`
-            })
-        });
-        return await response.json();
+     * Aggiorna la risposta di una recensione (Tabella 'reviews')
+     */
+    async updateReviewResponse(reviewId, responseText) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/reviews/response`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': 'Bearer ' + AuthService.getUser().token
+                },
+                body: JSON.stringify({ reviewId, response: responseText })
+            });
+            if (!response.ok) throw new Error('Errore durante l\'invio della risposta della recensione');
+            return await response.json();
+        } catch (error) {
+            console.error("API Error (postResponseReview):", error);
+            throw error;
+        }
+    },
+    /**
+     * Pubblica una nuova recensione per un mentor (Tabella 'reviews')
+     */
+    async postReview(reviewData) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/reviews/post_review`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': 'Bearer ' + AuthService.getUser().token
+                },
+                body: JSON.stringify(reviewData)
+            });
+            if (!response.ok) throw new Error('Errore durante l\'invio della recensione');
+            return await response.json();
+        } catch (error) {
+            console.error("API Error (postReview):", error);
+            throw error;
+        }
     }
 };
-
