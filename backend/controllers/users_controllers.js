@@ -66,3 +66,66 @@ export const updateProfile = async (req, res) => {
     
     }
 }
+
+export const getUserStats = async (req, res) => {
+    const userID = req.userId;
+    try {
+        const result = await db.query(
+            `SELECT * FROM get_user_stats($1)`,
+            [userID]
+        );
+        res.json({ stats: result.rows[0] });
+    } catch (error) {
+        console.error("Errore durante il recupero delle statistiche dell'utente:", error);
+        res.status(500).json({ message: "Errore del server durante il recupero delle statistiche" });
+    }
+}
+
+export const deleteMyaccount = async (req, res) => {
+    const userID = req.userId;
+    const { password } = req.body ?? {};
+
+    if (!password) {
+        return res.status(400).json({ message: "La password è richiesta per eliminare l'account" });
+    }
+
+    try {
+        await db.query("BEGIN");
+
+        const userResult = await db.query(
+            `SELECT password FROM users WHERE id = $1`,
+            [userID]
+        );
+        if (userResult.rows.length === 0) {
+            await db.query("ROLLBACK");
+            return res.status(404).json({ message: "Utente non trovato" });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, userResult.rows[0].password);
+        if (!isPasswordValid) {
+            await db.query("ROLLBACK");
+            return res.status(401).json({ message: "Password errata" });
+        }
+
+        const areBookings = await db.query(
+            `SELECT 1 FROM bookings WHERE (mentee_id = $1 OR mentor_id = $1) AND status IN ('scheduled', 'in_progress') LIMIT 1`,
+            [userID]
+        );
+        if (areBookings.rows.length > 0) {
+            await db.query("ROLLBACK");
+            return res.status(400).json({ message: "Non è possibile eliminare l'account con prenotazioni attive" });
+        }
+
+        await db.query(
+            `DELETE FROM users WHERE id = $1`,
+            [userID]
+        );
+        await db.query("COMMIT");
+
+        res.json({ message: "Account eliminato con successo" });
+    } catch (error) {
+        await db.query("ROLLBACK");
+        console.error("Errore durante l'eliminazione dell'account:", error);
+        res.status(500).json({ message: "Errore del server durante l'eliminazione dell'account" });
+    }
+}
