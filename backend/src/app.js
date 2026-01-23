@@ -21,6 +21,11 @@ app.use('/api/sessions', mentorsRoutes);
 
 
 
-app.listen(3000, () => console.log("Server in ascolto sulla porta 3000"));
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server in ascolto sulla porta ${PORT}`);
+});
+
 
 export default app;
