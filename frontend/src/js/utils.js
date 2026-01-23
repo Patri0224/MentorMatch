@@ -5,46 +5,58 @@ const AUTH_KEY = "mentorMatch_user";
 const AuthService = {
     // Login
     // Temporanea per test
-    login: function (username, password) {
+    login: async function (username, password) {
 
         let ttl = 3600; // 1 ora in secondi
 
-        const { user, cod } = AuthApi.login(username, password); // Chiamata all'API di login
+        const { cod, id, name, role, token } = await ApiService.login(username, password); // Chiamata all'API di login
 
+        if (cod != 1) {
+            return cod; // Login fallito
+        }
+        const user = { id, name, role, token };
         localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+        localStorage.setItem('token', token);
         localStorage.setItem('lastLogin', new Date().toISOString());
         localStorage.setItem('ttl', ttl);
         return 1; // Login riuscito
     },
 
     //Logout
-    //Temporanea per test
     logout: function () {
         localStorage.removeItem(AUTH_KEY);
         localStorage.removeItem('lastLogin');
         localStorage.removeItem('ttl');
+        localStorage.removeItem('token');
         window.location.href = 'index.html'; // Rimanda alla home
     },
 
-    // Recupero dati utente 
-    //Temporanea per test
+    // Recupero dati utente
     getUser: function () {
         const userStr = localStorage.getItem(AUTH_KEY);
+        const token = localStorage.getItem('token');
         if (!userStr) return null;
-        return JSON.parse(userStr);
+        if (token) {
+            const userObj = JSON.parse(userStr);
+            userObj.token = token;
+            return userObj;
+        }
+        return null;
     },
 
     // Controllo utente loggato
-    isLoggedIn: function () {
+    isLoggedIn: async function () {
         if (!this.getUser()) return false;
         const lastLogin = new Date(localStorage.getItem('lastLogin'));
         const ttl = parseInt(localStorage.getItem('ttl'), 10) * 1000;
         if (new Date() - lastLogin < ttl) {
-            const cod = AuthApi.refreshToken(this.getUser().username); // Chiamata all'API per refresh token
+            const {cod, token} = await ApiService.refreshToken(this.getUser().id, this.getUser().token); // Chiamata all'API per refresh token
             if (cod == 1) {
                 localStorage.setItem('lastLogin', new Date().toISOString());
+                localStorage.setItem('token', token);
+                return true; 
             }
-            return true;
+            return false;
         } else {
             this.logout();
             return false;
@@ -74,7 +86,9 @@ function updateNavbarUI() {
         `;
     } else {
         authButtonContainer.innerHTML = `
-            <a class="btn btn-light text-primary fw-bold" href="auth.html">Accedi / Registrati</a>
+            <a class="btn auth-btn fw-bold" href="login.html">
+                            Accedi / Registrati
+                        </a>
         `;
     }
 }
@@ -83,7 +97,7 @@ document.addEventListener('DOMContentLoaded', updateNavbarUI);
 
 function AuthIfNotAuthenticated() {
     if (!AuthService.isLoggedIn()) {
-        window.location.href = 'auth.html';
+        window.location.href = 'login.html';
     }
 }
 function HomepageIfAuthenticated() {

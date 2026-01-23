@@ -3,7 +3,7 @@ const usernameInput = document.getElementById('usernameInput');
 const passwordInput = document.getElementById('passwordInput');
 const usernameError = document.getElementById('usernameError');
 const passwordError = document.getElementById('passwordError');
-loginForm.addEventListener('submit', function (e) {
+loginForm.addEventListener('submit', async function (e) {
     e.preventDefault();
     const username = usernameInput.value;
     const password = passwordInput.value;
@@ -25,7 +25,8 @@ loginForm.addEventListener('submit', function (e) {
 
 
 
-    const cod = AuthService.login(username, password);
+    const cod = await AuthService.login(username, password);
+
     if (cod == 1) {
         window.location.href = 'index.html';
     } else {

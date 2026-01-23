@@ -15,6 +15,7 @@
         })();
     </script>
     <script src="../src/js/utils.js"></script>
+    <script src="../src/api/api.js"></script>
     <script>HomepageIfAuthenticated();</script>
 </head>
 
@@ -28,14 +29,16 @@
 
         <form id="loginForm">
             <div class="mb-3">
-                <label for="usernameInput" class="form-label">Nome Utente</label>
-                <input type="text" class="form-control" id="usernameInput" placeholder="Es. Mario Rossi" required>
-                <p id="usernameError" class="text-danger small mt-1 d-none">Nome utente non valido.</p>
+                <label for="usernameInput" class="form-label">E-mail</label>
+                <input type="text" class="form-control" id="usernameInput" placeholder="Es. Mario Rossi" name="email"
+                    required>
+                <p id="usernameError" class="text-danger small mt-1 d-none">E-mail non valida.</p>
             </div>
 
             <div class="mb-3">
                 <label for="passwordInput" class="form-label">Password</label>
-                <input type="password" class="form-control" id="passwordInput" placeholder="******" required>
+                <input type="password" class="form-control" id="passwordInput" placeholder="******" name="password"
+                    required>
                 <p id="passwordError" class="text-danger small mt-1 d-none">Password non valida.</p>
             </div>
 
@@ -43,7 +46,9 @@
                 <button type="submit" class="btn btn-primary">Accedi</button>
             </div>
         </form>
-
+        <div class="text-center mt-3">
+            <a href="registration.html"><button class="btn btn-secondary">Registrati</button></a>
+        </div>
         <div class="text-center mt-3">
             <a href="index.html" class="small text-body-secondary">Torna alla Home</a>
         </div>

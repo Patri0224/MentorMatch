@@ -17,7 +17,7 @@
         })();
     </script>
     <script src="../src/js/utils.js"></script>
-    
+
 
 
 </head>
@@ -39,20 +39,23 @@
                         <a class="nav-link active" aria-current="page" href="index.html">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="mentor_catalog.html">Trova un Mentor</a>
+                        <a class="nav-link" href="search-mentors.html">Trova un Mentor</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="dashboard.html">Dashboard</a>
                     </li>
 
                     <li class="nav-item mx-2">
-                        <button id="theme-toggle" class="btn nav-link" title="Cambia tema">
+                        <button id="theme-toggle" class="btn nav-link" title="Cambia tema"
+                            onclick="changeThemeOnClick()">
                             <i class="bi bi-moon-stars-fill"></i>
                         </button>
                     </li>
 
                     <li class="nav-item ms-lg-2" id="auth-button-container">
-                        <a class="btn btn-light text-primary fw-bold" href="auth.html">Accedi / Registrati</a>
+                        <a class="btn auth-btn fw-bold" href="login.html">
+                            Accedi / Registrati
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -66,8 +69,8 @@
                 Connettiti con professionisti esperti per orientare la tua carriera e migliorare le tue competenze.
             </p>
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                <a href="mentor_catalog.html" class="btn btn-primary btn-lg px-4 gap-3">Cerca un Mentor</a>
-                <a href="auth.html" class="btn btn-outline-secondary btn-lg px-4">Diventa un Mentor</a>
+                <a href="search-mentors.html" class="btn btn-primary btn-lg px-4 gap-3">Cerca un Mentor</a>
+                <a href="registration.html" class="btn btn-outline-secondary btn-lg px-4">Diventa un Mentor</a>
             </div>
         </div>
     </header>
