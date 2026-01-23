@@ -19,7 +19,20 @@ jobs:
 
       - name: Run container
         run: docker run -d --name mentor-match -p 3000:3000 -e PORT=3000 mentor-match
-     
+        
+      - name: Debug - docker ps
+        if: always()
+        run: docker ps -a
+
+      - name: Debug - inspect container
+        if: always()
+        run: |
+          docker inspect mentor-match --format='Status={{.State.Status}} ExitCode={{.State.ExitCode}} Error={{.State.Error}}'
+
+      - name: Debug - logs
+        if: always()
+        run: docker logs mentor-match || true
+
       - name: Debug container status
         if: always()
         run: |
