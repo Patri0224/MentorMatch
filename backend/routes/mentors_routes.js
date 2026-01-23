@@ -1,8 +1,10 @@
 import express from 'express';
-import { listMentors } from '../controllers/mentors_controllers.js';
+import { listMentors, getSectors } from '../controllers/mentors_controllers.js';
 
 const router = express.Router();
 
-router.get('/', listMentors);
+router.get('/search', listMentors);
+router.get('/get-sector', getSectors);
+
 
 export default router;
