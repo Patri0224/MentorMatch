@@ -17,14 +17,23 @@ jobs:
       - name: Run container
         run: docker run -d --name mentor-match -p 3000:3000 -e PORT=3000 mentor-match
 
-      - name: Smoke test
+      - name: Smoke test (wait for server)
         run: |
-          for i in {1..30}; do
+          echo "Waiting for server..."
+          for i in {1..60}; do
             if curl -sS http://localhost:3000/health > /dev/null; then
-              echo "OK"
+              echo "Server responding"
               exit 0
             fi
-            sleep 1
+            echo "Not up yet..."
+            sleep 2
           done
+          echo "Server did not respond"
           docker logs mentor-match
           exit 1
+      - name: Check container status
+        run: |
+          docker ps -a
+          docker logs mentor-match
+
+
