@@ -370,7 +370,6 @@ const ApiService = {
     async getMentorById(id) {
         try {
             const response = await fetch(`${API_BASE_URL}/mentors/get-mentor/${id}`);
-            debugger;
             const data = await response.json();
             if (!response.ok) throw new Error('Profilo non trovato ' + JSON.stringify(data, null, 2));
             return data;
