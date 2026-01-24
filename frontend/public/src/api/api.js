@@ -13,7 +13,7 @@ const ApiService = {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Errore durante la registrazione ' + response);
+                throw new Error(errorData.message || 'Errore durante la registrazione ' + JSON.stringify(response, null, 2));
             }
 
             return await response.json();
@@ -46,7 +46,7 @@ const ApiService = {
             });
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Errore durante il login ' + response);
+                throw new Error(errorData.message || 'Errore durante il login ' + JSON.stringify(response, null, 2));
             }
             return await response.json();
         } catch (error) {
@@ -66,7 +66,7 @@ const ApiService = {
             });
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Errore durante il refresh del token ' + response);
+                throw new Error(errorData.message || 'Errore durante il refresh del token ' + JSON.stringify(response, null, 2));
             }
             console.log("API Token refreshed");
             const data = await response.json();
@@ -93,7 +93,7 @@ const ApiService = {
             });
 
             const result = await response.json();
-            if (!response.ok) throw new Error(result.message || 'Errore aggiornamento ' + response);
+            if (!response.ok) throw new Error(result.message || 'Errore aggiornamento ' + JSON.stringify(response, null, 2));
             return result;
         } catch (error) {
             throw error;
@@ -113,7 +113,7 @@ const ApiService = {
                 },
                 body: null
             });
-            if (!response.ok) throw new Error('Errore nel recupero statistiche ' + response);
+            if (!response.ok) throw new Error('Errore nel recupero statistiche ' + JSON.stringify(response, null, 2));
             return await response.json();
         } catch (error) {
             console.error("API Error (getStats):", error);
@@ -160,7 +160,7 @@ const ApiService = {
                 },
                 body: null
             });
-            if (!response.ok) throw new Error('Errore nel recupero prenotazioni ' + response);
+            if (!response.ok) throw new Error('Errore nel recupero prenotazioni ' + JSON.stringify(response, null, 2));
             return await response.json();
         } catch (error) {
             console.error("API Error (getBookings):", error);
@@ -185,7 +185,7 @@ const ApiService = {
                     cancelled_by: AuthService.getUser().id
                 })
             });
-            if (!response.ok) throw new Error('Impossibile annullare la prenotazione ' + response);
+            if (!response.ok) throw new Error('Impossibile annullare la prenotazione ' + JSON.stringify(response, null, 2));
             return await response.json();
         } catch (error) {
             console.error("API Error (cancelBooking):", error);
@@ -209,7 +209,7 @@ const ApiService = {
                 },
                 body: JSON.stringify(sessionData)
             });
-            if (!response.ok) throw new Error('Errore nella creazione dello slot ' + response);
+            if (!response.ok) throw new Error('Errore nella creazione dello slot ' + JSON.stringify(response, null, 2));
             return await response.json();//cod 1 session.id
         } catch (error) {
             console.error("API Error (createSession):", error);
@@ -229,7 +229,7 @@ const ApiService = {
                     "Authorization": "Bearer " + AuthService.getUser().token
                 }
             });
-            if (!response.ok) throw new Error('Impossibile eliminare lo slot ' + response);
+            if (!response.ok) throw new Error('Impossibile eliminare lo slot ' + JSON.stringify(response, null, 2));
             return await response.json();
         } catch (error) {
             console.error("API Error (deleteSession):", error);
@@ -252,7 +252,7 @@ const ApiService = {
                 },
                 body: JSON.stringify(messageData)
             });
-            if (!response.ok) throw new Error('Errore invio messaggio ' + response);
+            if (!response.ok) throw new Error('Errore invio messaggio ' + JSON.stringify(response, null, 2));
             return await response.json();
         } catch (error) {
             console.error("API Error (message):", error);
@@ -273,7 +273,7 @@ const ApiService = {
                 },
                 body: null
             });
-            if (!response.ok) throw new Error('Errore nel recupero messaggi ' + response);
+            if (!response.ok) throw new Error('Errore nel recupero messaggi ' + JSON.stringify(response, null, 2));
             return await response.json();
         } catch (error) {
             console.error("API Error (getMessages):", error);
@@ -311,7 +311,7 @@ const ApiService = {
                 },
                 body: JSON.stringify({ other_user_id: otherUserId })
             });
-            if (!response.ok) throw new Error('Errore nel recupero della chat history ' + response);
+            if (!response.ok) throw new Error('Errore nel recupero della chat history ' + JSON.stringify(response, null, 2));
             return await response.json();
         } catch (error) {
             console.error("API Error (getChatHistory):", error);
@@ -329,7 +329,7 @@ const ApiService = {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(filters)
             });
-            if (!response.ok) throw new Error('Errore nel caricamento dei mentor ' + response);
+            if (!response.ok) throw new Error('Errore nel caricamento dei mentor ' + JSON.stringify(response, null, 2));
             return await response.json();
         } catch (error) {
             console.error("API Error (search):", error);
@@ -344,7 +344,7 @@ const ApiService = {
     async getAllSectors() {
         try {
             const response = await fetch(`${API_BASE_URL} / mentors / get-sector`);
-            if (!response.ok) throw new Error('Errore caricamento settori ' + response);
+            if (!response.ok) throw new Error('Errore caricamento settori ' + JSON.stringify(response, null, 2));
             return await response.json(); // Restituisce un array di stringhe
         } catch (error) {
             console.error("API Error (sectors):", error);
@@ -359,7 +359,7 @@ const ApiService = {
     async getMentorById(id) {
         try {
             const response = await fetch(`${API_BASE_URL} / mentors / get-mentor / ${id}`);
-            if (!response.ok) throw new Error('Profilo non trovato ' + response);
+            if (!response.ok) throw new Error('Profilo non trovato ' + JSON.stringify(response, null, 2));
             return await response.json();
         } catch (error) {
             console.error("API Error (getMentor):", error);
@@ -374,7 +374,7 @@ const ApiService = {
     async getMentorSessions(mentorId) {
         try {
             const response = await fetch(`${API_BASE_URL} / sessions / mentor/ ${mentorId}`);
-            if (!response.ok) throw new Error('Errore caricamento sessioni ' + response);
+            if (!response.ok) throw new Error('Errore caricamento sessioni ' + JSON.stringify(response, null, 2));
             return await response.json();
         } catch (error) {
             console.error("API Error (sessions):", error);
@@ -389,7 +389,7 @@ const ApiService = {
     async getMentorReviews(mentorId) {
         try {
             const response = await fetch(`${API_BASE_URL} / mentors /reviews/${mentorId}`);
-            if (!response.ok) throw new Error('Errore caricamento recensioni ' + response);
+            if (!response.ok) throw new Error('Errore caricamento recensioni ' + JSON.stringify(response, null, 2));
             return await response.json();
         } catch (error) {
             console.error("API Error (reviews):", error);
@@ -408,7 +408,7 @@ const ApiService = {
      */
     async getBookingDetails(bookingId) {
         const response = await fetch(`${API_BASE_URL} / bookings / details.php ? id = ${bookingId}`);
-        if (!response.ok) throw new Error('Dettagli non trovati ' + response);
+        if (!response.ok) throw new Error('Dettagli non trovati ' + JSON.stringify(response, null, 2));
         return await response.json();
     },
     /**
@@ -451,7 +451,7 @@ const ApiService = {
                 },
                 body: JSON.stringify({ reviewId, response: responseText })
             });
-            if (!response.ok) throw new Error('Errore durante l\'invio della risposta della recensione ' + response);
+            if (!response.ok) throw new Error('Errore durante l\'invio della risposta della recensione ' + JSON.stringify(response, null, 2));
             return await response.json();
         } catch (error) {
             console.error("API Error (postResponseReview):", error);
@@ -471,7 +471,7 @@ const ApiService = {
                 },
                 body: JSON.stringify(reviewData)
             });
-            if (!response.ok) throw new Error('Errore durante l\'invio della recensione ' + response);
+            if (!response.ok) throw new Error('Errore durante l\'invio della recensione ' + JSON.stringify(response, null, 2));
             return await response.json();
         } catch (error) {
             console.error("API Error (postReview):", error);
