@@ -5,7 +5,7 @@ export const postMessage = async (req, res) => {
     const senderId = req.user.userId;
     const { recipientId, content } = req.body;
 
-    if (!recipientId || !content?.trim()) 
+    if (!recipientId || !content?.trim())
         return res.status(400).json({ message: "Dati mancanti per inviare il messaggio" });
     try {
         const result = await db.query(
@@ -39,17 +39,17 @@ export const postMessage = async (req, res) => {
         console.error("Errore durante l'invio del messaggio:", error);
         res.status(500).json({ error: "Errore interno del server." });
     }
-}; 
+};
 
 
 
 
 export const getMessages = async (req, res) => {
-    const userId = req.params.userId; 
-    
+    const userId = req.params.userId;
+
     try {
-    const result = await db.query(
-    `
+        const result = await db.query(
+            `
      SELECT DISTINCT ON (CASE WHEN sender_id = $1 THEN recipient_id ELSE sender_id END)
             CASE WHEN sender_id = $1 THEN recipient_id ELSE sender_id END AS other_user_id,
             u.name AS other_user_name,
@@ -62,11 +62,13 @@ export const getMessages = async (req, res) => {
         WHERE m.sender_id = $1 OR m.recipient_id = $1
         ORDER BY (CASE WHEN sender_id = $1 THEN recipient_id ELSE sender_id END), m.created_at DESC;
     `
-    [userId]
-    );
-
+            [userId]
+        );
+        if (result.rows.length === 0) {
+            return res.status(200).json({ conversations: [] });
+        }
         // Ordiniamo i risultati finali per data decrescente (la conversazione più recente in alto)
-        const sortedConversations = result.rows.sort((a, b) => 
+        const sortedConversations = result.rows.sort((a, b) =>
             new Date(b.created_at) - new Date(a.created_at)
         );
 
@@ -82,7 +84,7 @@ export const getChatHistory = async (req, res) => {
     const { withUserId } = req.body;
     if (!withUserId)
         return res.status(400).json({ message: "ID utente mancante per recuperare i messaggi" });
-    
+
     try {
         const result = await db.query(
             `
@@ -97,14 +99,14 @@ export const getChatHistory = async (req, res) => {
     } catch (error) {
         console.error("Errore durante il recupero della cronologia chat:", error);
         res.status(500).json({ error: "Errore interno del server." });
-    }   
+    }
 }
 
 export const markAsRead = async (req, res) => {
     const userId = req.user.userId;
     const { fromUserId } = req.body;
     if (!fromUserId)
-        return res.status(400).json({ message: "ID utente mancante per aggiornare i messaggi" });   
+        return res.status(400).json({ message: "ID utente mancante per aggiornare i messaggi" });
     try {
         const result = await db.query(
             `

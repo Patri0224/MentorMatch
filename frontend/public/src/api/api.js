@@ -349,13 +349,24 @@ const ApiService = {
      */
     async searchMentors(filters) {
         try {
-            const response = await fetch(`${API_BASE_URL}/mentors/search`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(filters)
+            // 1. Trasforma l'oggetto filters in una query string (es. ?sector=tech&rating=4)
+            const queryParams = new URLSearchParams(filters).toString();
+            const url = `${API_BASE_URL}/mentors/search/${queryParams}`;
+
+            const response = await fetch(url, {
+                method: 'GET', // Ora è una GET
+                headers: {
+                    'Accept': 'application/json'
+                }
+                // body rimosso perché nelle GET non è ammesso
             });
+
             const data = await response.json();
-            if (!response.ok) throw new Error('Errore nel caricamento dei mentor ' + JSON.stringify(data, null, 2));
+
+            if (!response.ok) {
+                throw new Error('Errore nel caricamento dei mentor ' + JSON.stringify(data, null, 2));
+            }
+
             return data;
         } catch (error) {
             console.error("API Error (search):", error);
