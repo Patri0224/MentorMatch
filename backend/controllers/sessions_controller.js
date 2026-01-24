@@ -75,7 +75,7 @@ export const listmySessions = async (req, res) => {
     }
 };
 
-export const listMentorAvailableSessions = async (req, res) => {
+export const getMentorSessions = async (req, res) => {
     const mentorId = Number(req.params.mentorId);
 
     try {

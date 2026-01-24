@@ -4,11 +4,11 @@ const mentorId = urlParams.get('id');
 
 // Al caricamento del DOM
 document.addEventListener('DOMContentLoaded', async () => {
-   /* if (!mentorId) {
+    if (!mentorId) {
         alert("Mentor non trovato.");
         window.location.href = 'search-mentors.html';
         return;
-    }*/
+    }
 
     // 1. Caricamento dati iniziali
     await loadMentorData();
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
  */
 function updateUIForAuth() {
     const isLoggedIn = AuthService.isLoggedIn();
-    
+
     // Elementi UI
     const btnOpenReview = document.getElementById('btnOpenReview');
     const btnOpenMessage = document.getElementById('btnOpenMessage');
@@ -57,7 +57,7 @@ function updateUIForAuth() {
 async function loadMentorData() {
     try {
         const mentor = await ApiService.getMentorById(mentorId);
-        
+
         document.getElementById('mentorName').innerText = mentor.name;
         document.getElementById('mentorBio').innerText = mentor.bio || "Nessuna biografia disponibile.";
         document.getElementById('mentorSector').innerText = mentor.sector;
@@ -67,8 +67,8 @@ async function loadMentorData() {
 
         // Generazione stelle rating
         const rating = Math.round(mentor.rating || 0);
-        document.getElementById('ratingStars').innerHTML = 
-            '<i class="bi bi-star-fill text-warning"></i>'.repeat(rating) + 
+        document.getElementById('ratingStars').innerHTML =
+            '<i class="bi bi-star-fill text-warning"></i>'.repeat(rating) +
             '<i class="bi bi-star text-muted"></i>'.repeat(5 - rating);
 
         // Lingue (Array PostgreSQL)
@@ -87,12 +87,43 @@ async function loadMentorData() {
 /**
  * Carica le sessioni disponibili dalla tabella 'sessions'
  */
+/*
+
+
+
+
+
+
+
+
+
+
+chiedi di rifare
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*/
 async function loadAvailableSessions() {
     const list = document.getElementById('sessionsList');
     try {
         const sessions = await ApiService.getMentorSessions(mentorId);
         list.innerHTML = '';
-
+        /*
+        id,mentor_id,start_time,end_time,duration
+        */
         if (!sessions || sessions.length === 0) {
             list.innerHTML = '<p class="text-muted small p-3 border rounded">Nessuno slot disponibile al momento.</p>';
             return;
@@ -190,7 +221,7 @@ async function sendMessage() {
             content: content
         });
         alert("Messaggio inviato correttamente!");
-        
+
         // Chiudi il modale
         const modal = bootstrap.Modal.getInstance(document.getElementById('messageModal'));
         modal.hide();
@@ -215,7 +246,6 @@ async function submitReview() {
     try {
         await ApiService.postReview({
             mentor_id: mentorId,
-            mentee_id: AuthService.getUserId(),
             rating: parseInt(rating),
             comment: comment
         });
