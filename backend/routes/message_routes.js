@@ -1,5 +1,5 @@
 import express from 'express';
-import { postMessages, getMessages, markAsRead, getChatHistory } from '../controllers/message_controllers.js';
+import { postMessages, getMessages, markAsRead, getChatHistory } from '../src/controllers/message_controllers.js';
 import { authenticateToken } from '../src/middleware/auth_middleware.js';
 
 const router = express.Router();

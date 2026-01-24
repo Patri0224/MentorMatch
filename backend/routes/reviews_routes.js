@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticateToken } from '../src/middleware/auth_middleware';
-import { answer_review, post_review } from '../controllers/reviews_controller.js';
+import { answer_review, post_review } from '../src/controllers/reviews_controller.js';
 
 const router = express.Router();
 

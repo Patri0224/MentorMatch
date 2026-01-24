@@ -1,5 +1,5 @@
 import express from 'express';
-import { listMentors, getSectors, getMentorById, getMentorsReviews} from '../controllers/mentors_controllers.js';
+import { listMentors, getSectors, getMentorById, getMentorsReviews} from '../src/controllers/mentors_controllers.js';
 
 const router = express.Router();
 
