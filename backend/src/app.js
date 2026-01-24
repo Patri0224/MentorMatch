@@ -12,7 +12,10 @@ import messageRoutes from '../routes/message_routes.js';
 import reviewRoutes from '../routes/reviews_routes.js';
 
 
+
 const app = express();
+const PORT = process.env.PORT || 3000;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 // Middleware
 app.use(cors());
@@ -28,8 +31,14 @@ app.use('/api/sessions', sessionRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/reviews', reviewRoutes);
 
+app.get("/health", (req, res) => res.status(200).send("ok"));
+app.get("/", (req, res) => res.send("MentorMatch backend is running ✅"));
 
 
-app.listen(3000, () => console.log("Server in ascolto sulla porta 3000"));
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server in ascolto sulla porta ${PORT}`);
+});
+
 
 export default app;

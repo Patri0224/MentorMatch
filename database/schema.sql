@@ -15,7 +15,8 @@ CREATE TABLE users (
     hourly_rate DECIMAL(10, 2) DEFAULT 0,
     rating DECIMAL(3, 2) DEFAULT 0,
     review_count INTEGER DEFAULT 0,
-    avatar_url VARCHAR(500),
+    avatar_url VARCHAR(500), 
+    meeting_url VARCHAR(500),
     stripe_customer_id VARCHAR(255),
     stripe_account_id VARCHAR(255),
     email_verified BOOLEAN DEFAULT FALSE,
@@ -427,4 +428,5 @@ INSERT INTO email_templates (name, subject, body, variables) VALUES
 ('new_message', 'Nuovo Messaggio',
  'Ciao {{recipientName}}, hai ricevuto un nuovo messaggio da {{senderName}}.',
  '{"recipientName": "string", "senderName": "string"}'::jsonb)
+
 ON CONFLICT (name) DO NOTHING;
