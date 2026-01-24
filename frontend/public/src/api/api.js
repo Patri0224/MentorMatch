@@ -24,6 +24,7 @@ const ApiService = {
     },
     async login(username, password) {
         //test api login
+        /*
         if (username === "admin" && password === "Password.24") {
             console.log("API Login successful for admin");
             return {
@@ -33,7 +34,7 @@ const ApiService = {
                 role: "mentor",
                 token: "dummy-token-admin"
             };
-        }
+        }*/
         const email = username; // Considera username come email
         try {
             const response = await fetch(`${API_BASE_URL}/auth/login`, {
