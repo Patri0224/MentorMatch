@@ -53,11 +53,11 @@ export const getMentorById = async (req, res) => {
         const result = await db.query(
             `SELECT id, name, bio, sector, hourly_rate, reviews_count, avatar_url, rating, languages
             FROM users 
-            WHERE id = $1 AND role = 'mentor'`,
+            WHERE id = $1`,
             [id]
         );
         if (result.rows.length === 0) {
-            return res.status(404).json({ message: "Mentor non trovato" + id });
+            return res.status(404).json({ message: "Utente non trovato" + id });
         }
         res.json({ mentor: result.rows[0] });
     } catch (error) {
