@@ -35,7 +35,7 @@ export async function processEmailQueue(batchSize = 10) {
             await db.query(
                 `
                 UPDATE email_queue
-                SET status = 'processing', updated_at = NOW(),
+                SET status = 'processing', attempts = attempts + 1
                 WHERE id = $1
                 `,
                 [id]
