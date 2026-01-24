@@ -12,8 +12,8 @@ export const listMentors = async (req, res) => {
 
     try {
         const result = await db.query(
-            `SELECT m.id, m.name, m.sector, m.hourly_rate, m.languages, m.review_count, m.rating, m.avatar_url
-            FROM search_mentors($1, $2, $3, $4) m
+            `SELECT m.id, m.name, m.sector, m.hourly_rate, m.languages, m.review_count, m.rating, u.avatar_url
+            FROM search_mentors($1, $2, $3, $4) m join users u on m.id = u.id
             WHERE (
                 -- 1. Se nessun filtro temporale è attivo, mostra tutti
                 ($5::TIMESTAMP IS NULL AND $6::TIMESTAMP IS NULL AND $7 IS NULL)
