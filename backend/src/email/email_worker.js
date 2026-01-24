@@ -18,7 +18,7 @@ export async function processEmailQueue(batchSize = 10) {
         SELECT id, type, recipient, data
         FROM email_queue
         WHERE status = 'pending' 
-        AND (schedule_at IS NULL OR schedule_at <= NOW())
+        AND (scheduled_at IS NULL OR scheduled_at <= NOW())
         ORDER BY priority DESC, created_at ASC
         LIMIT $1
         FOR UPDATE SKIP LOCKED

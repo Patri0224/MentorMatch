@@ -4,7 +4,7 @@ export async function enqueueEmail({type, recipient, data, priority = 1, schedul
     try {
         const result = await db.query(
             `
-            INSERT INTO email_queue (type, recipient, data, priority, schedule_at, created_at)
+            INSERT INTO email_queue (type, recipient, data, priority, scheduled_at, created_at)
             VALUES ($1, $2, $3, $4,'pending', $5)
             RETURNING id
             `,
