@@ -121,7 +121,9 @@ export const createCheckoutBooking = async (req, res) => {
             await enqueueEmail({
                 type: 'booking_confirmation',
                 recipient: req.user.email,
-                data: { name: req.user.name, mentorName: session.mentor_name, date: date, time: time }
+                data: { name: req.user.name, mentorName: session.mentor_name, date: date, time: time },
+                scheduleAt: null,
+                priority: 1
             });
         }
         return res.status(201).json({

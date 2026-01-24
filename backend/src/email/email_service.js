@@ -1,6 +1,6 @@
 import db from '../db.js';
 
-export async function enqueueEmail({type, recipient, data, scheduleAt = null, priority = 1}) {
+export async function enqueueEmail({type, recipient, data, scheduleAt = null, priority}) {
     try {
         const result = await db.query(
             `

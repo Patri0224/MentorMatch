@@ -26,7 +26,9 @@ export const post_review = async (req, res) => {
             await enqueueEmail({
                 type: 'new_review',
                 recipient: req.user.email,
-                data: { name: req.user.name, mentorId: mentorId }
+                data: { name: req.user.name, mentorId: mentorId },
+                scheduleAt: null,
+                priority: 1
             });
         }   
     } catch (error) {

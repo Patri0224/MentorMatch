@@ -25,7 +25,9 @@ export const registerUser = async (req, res) => {
     await enqueueEmail({
       type: 'welcome',
       recipient: result.rows[0].email,
-      data: { name: result.rows[0].name }
+      data: { name: result.rows[0].name },
+      scheduleAt: null,
+      priority: 1
     });
     res.status(201).json({
       message: 'Utente registrato con successo',

@@ -30,7 +30,9 @@ export const postMessage = async (req, res) => {
             await enqueueEmail({
                 type: 'new_message',
                 recipient: req.user.email,
-                data: { name: req.user.name }
+                data: { name: req.user.name },
+                scheduleAt: null,
+                priority: 1
             });
         }
     } catch (error) {
