@@ -53,12 +53,13 @@ const AuthService = {
         const tem = new Date() - lastLogin;
         if (tem < ttl && tem >= 30000) { // Meno del TTL ma più di 5 minuti
             const { cod, token } = await ApiService.refreshToken(this.getUser().id, this.getUser().token); // Chiamata all'API per refresh token
-            if (cod == 1) {
-                localStorage.setItem('lastLogin', new Date().toISOString());
-                localStorage.setItem('token', token);
-                return true;
+            if (cod != 1) {
+
+                return false;
             }
-            return false;
+            localStorage.setItem('lastLogin', new Date().toISOString());
+            localStorage.setItem('token', token);
+            return true;
         } else {
             this.logout();
             return false;
