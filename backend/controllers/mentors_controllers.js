@@ -51,7 +51,7 @@ export const getMentorById = async (req, res) => {
     const { id } = req.params;
     try {
         const result = await db.query(
-            `SELECT id, name, bio, sector, hourly_rate, review_count, avatar_url, rating, languages, meeting_url
+            `SELECT id, name, bio, sector, hourly_rate, review_count, avatar_url, rating, languages, meeting_url, role, email_notifications
             FROM users 
             WHERE id = $1`,
             [id]

@@ -40,7 +40,7 @@ async function loadUserProfile(userId) {
         document.getElementById('editBio').value = data.user.bio || '';
         document.getElementById('editNotif').checked = data.user.email_notifications;
 
-        if (data.user.role === 'mentor' || await ApiService.getUserRole(userId) === 'mentor') {
+        if (data.user.role === 'mentor') {
             document.getElementById('editLanguage').value = (data.user.languages && data.user.languages.length > 0) ? data.user.languages.join(', ') : '';
             document.getElementById('editSector').value = data.user.sector || '';
             document.getElementById('editRate').value = data.user.hourly_rate;
