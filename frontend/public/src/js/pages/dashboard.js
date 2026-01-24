@@ -35,16 +35,16 @@ function renderRoleSpecificUI(role) {
 async function loadUserProfile(userId) {
     try {
         const data = await ApiService.getMentorById(userId); // Riutilizziamo la stessa funzione
-        document.getElementById('editName').value = data.users.name;
-        document.getElementById('editEmail').value = data.users.email;
-        document.getElementById('editBio').value = data.users.bio || '';
-        document.getElementById('editNotif').checked = data.users.email_notifications;
+        document.getElementById('editName').value = data.user.name;
+        document.getElementById('editEmail').value = data.user.email;
+        document.getElementById('editBio').value = data.user.bio || '';
+        document.getElementById('editNotif').checked = data.user.email_notifications;
 
-        if (data.users.role === 'mentor') {
-            document.getElementById('editLanguage').value = (data.users.languages && data.users.languages.length > 0) ? data.users.languages.join(', ') : '';
-            document.getElementById('editSector').value = data.users.sector || '';
-            document.getElementById('editRate').value = data.users.hourly_rate;
-            document.getElementById('editMeetingUrl').value = data.users.meeting_url || '';
+        if (data.user.role === 'mentor') {
+            document.getElementById('editLanguage').value = (data.user.languages && data.user.languages.length > 0) ? data.user.languages.join(', ') : '';
+            document.getElementById('editSector').value = data.user.sector || '';
+            document.getElementById('editRate').value = data.user.hourly_rate;
+            document.getElementById('editMeetingUrl').value = data.user.meeting_url || '';
         }
     } catch (e) { console.error("Errore caricamento profilo", e); }
 }
