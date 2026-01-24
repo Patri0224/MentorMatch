@@ -1,12 +1,13 @@
 //nome della variabile in locale per salvare i dati utente
 //Temporanea per test
 const AUTH_KEY = "mentorMatch_user";
-
+var temp = null;
 const AuthService = {
+
     // Login
     // Temporanea per test
     login: async function (username, password) {
-
+        temp = Date.now();
         let ttl = 3600; // 1 ora in secondi
 
         const { cod, id, name, role, token } = await ApiService.login(username, password); // Chiamata all'API di login
@@ -49,7 +50,8 @@ const AuthService = {
         if (!this.getUser()) return false;
         const lastLogin = new Date(localStorage.getItem('lastLogin'));
         const ttl = parseInt(localStorage.getItem('ttl'), 10) * 1000;
-        if (new Date() - lastLogin < ttl) {
+        const tem = new Date() - lastLogin;
+        if (tem < ttl && tem >= 30000) { // Meno del TTL ma più di 5 minuti
             const { cod, token } = await ApiService.refreshToken(this.getUser().id, this.getUser().token); // Chiamata all'API per refresh token
             if (cod == 1) {
                 localStorage.setItem('lastLogin', new Date().toISOString());
@@ -96,14 +98,14 @@ function updateNavbarUI() {
 document.addEventListener('DOMContentLoaded', updateNavbarUI);
 
 async function AuthIfNotAuthenticated() {
-    const t= await AuthService.isLoggedIn();
+    const t = await AuthService.isLoggedIn();
     if (!t) {
         console.log("false");
         window.location.href = 'login.html';
     }
 }
 async function HomepageIfAuthenticated() {
-    const t= await AuthService.isLoggedIn();
+    const t = await AuthService.isLoggedIn();
     if (t) {
         console.log("true");
         window.location.href = 'index.html';
