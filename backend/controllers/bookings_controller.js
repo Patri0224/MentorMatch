@@ -150,7 +150,7 @@ export const getUserBookings = async (req, res) => {
             [userId]
         );
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: "Prenotazione non trovata!" });
+            return res.status(200).json({ bookings: [] });
         }
         res.json({ booking: result.rows });
     } catch (error) {

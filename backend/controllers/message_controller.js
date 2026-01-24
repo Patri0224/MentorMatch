@@ -45,7 +45,7 @@ export const postMessage = async (req, res) => {
 
 
 export const getMessages = async (req, res) => {
-    const userId = req.params.userId; // Preso dall'URL /api/messages/:userId
+    const userId = req.params.userId; 
     
     try {
     const result = await db.query(
