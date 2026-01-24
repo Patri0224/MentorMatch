@@ -3,35 +3,35 @@ import db from '../src/db.js';
 export const listMentors = async (req, res) => {
     const {
         sector,
+        language,
         max_hourly_rate,
         min_rating,
         session_start,
         session_end,
-        time_of_day // "mattina", "pomeriggio", "sera"
+        time_of_day
     } = req.query;
 
     try {
         const result = await db.query(
             `SELECT m.id, m.name, m.sector, m.hourly_rate, m.languages, m.review_count, m.rating, u.avatar_url
-            FROM search_mentors($1, $2, $3, $4) m join users u on m.id = u.id
+            FROM search_mentors($1, $2, $3, $4) m 
+            JOIN users u ON m.id = u.id
             WHERE (
-                -- 1. Se nessun filtro temporale è attivo, mostra tutti
+                -- 1. Se nessun filtro temporale è attivo, mostra tutti i mentor filtrati per settore/prezzo
                 ($5::TIMESTAMP IS NULL AND $6::TIMESTAMP IS NULL AND $7 IS NULL)
                 OR 
-                -- 2. Altrimenti controlla la disponibilità nelle sessioni
+                -- 2. Altrimenti controlla che esista almeno una sessione che soddisfi i criteri
                 EXISTS (
                     SELECT 1
                     FROM sessions s
                     WHERE s.mentor_id = m.id
                       AND s.available = TRUE
-                      -- Filtro Data (se presente)
-                      AND ($5::TIMESTAMP IS NULL OR s.start_time <= $5)
-                      AND ($6::TIMESTAMP IS NULL OR s.end_time >= $6)
-                      -- Filtro Fascia Oraria (controlla solo l'inizio)
+                      AND ($5::TIMESTAMP IS NULL OR s.start_time >= $5)
+                      AND ($6::TIMESTAMP IS NULL OR s.end_time <= $6)
                       AND (
                         $7 IS NULL OR
-                        ($7 = 'mattina'    AND EXTRACT(HOUR FROM s.start_time) BETWEEN 6 AND 12) OR
-                        ($7 = 'pomeriggio' AND EXTRACT(HOUR FROM s.start_time) BETWEEN 13 AND 17) OR
+                        ($7 = 'mattina'    AND EXTRACT(HOUR FROM s.start_time) BETWEEN 6 AND 11) OR
+                        ($7 = 'pomeriggio' AND EXTRACT(HOUR FROM s.start_time) BETWEEN 12 AND 17) OR
                         ($7 = 'sera'       AND EXTRACT(HOUR FROM s.start_time) BETWEEN 18 AND 23)
                       )
                 )
@@ -44,15 +44,15 @@ export const listMentors = async (req, res) => {
                 max_hourly_rate ? parseFloat(max_hourly_rate) : 9999,
                 session_start || null,
                 session_end || null,
-                time_of_day || null // Parametro $7
+                time_of_day || null
             ]
         );
 
-        res.json(result.rows);
+        res.json(result.rows); // Restituisci l'array puro per il .map() del frontend
 
     } catch (error) {
-        console.error("Errore durante la ricerca dei mentor:", error);
-        res.status(500).json({ message: "Errore interno durante la ricerca" + error });
+        console.error("Errore API listMentors:", error);
+        res.status(500).json({ message: "Errore durante la ricerca" });
     }
 }
 
