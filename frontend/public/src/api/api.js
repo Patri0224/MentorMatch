@@ -279,12 +279,29 @@ const ApiService = {
                 },
                 body: null
             });
-            const data = await response.json();
-            if (!response.ok) throw new Error('Errore nel recupero messaggi ' + JSON.stringify(data, null, 2));
-            return data;
+
+            // 1. Controlliamo se la risposta è effettivamente JSON
+            const contentType = response.headers.get("content-type");
+
+            if (!response.ok) {
+                // Se non è OK, proviamo a leggere l'errore solo se è JSON
+                if (contentType && contentType.includes("application/json")) {
+                    const errorData = await response.json();
+                    throw new Error(`Errore ${response.status}: ${JSON.stringify(errorData)}`);
+                } else {
+                    // Se il server ha mandato HTML (es. 404 di Render), leggiamolo come testo
+                    const errorText = await response.text();
+                    console.error("Il server ha risposto con HTML invece di JSON. Controlla la rotta!");
+                    throw new Error(`Errore severo ${response.status}. Controlla la console Network.`);
+                }
+            }
+
+            // 2. Se siamo qui, la risposta è 200 OK
+            return await response.json();
+
         } catch (error) {
-            console.error("API Error (getMessages):", error);
-            return [];
+            console.error("API Error (getMessages):", error.message);
+            return []; // Evita di rompere il frontend se i messaggi mancano
         }
     },
 
