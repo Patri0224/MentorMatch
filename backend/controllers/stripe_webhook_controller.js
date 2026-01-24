@@ -125,4 +125,5 @@ export const stripeWebHookController = async (req, res) => {
         console.error("Error processing webhook event:", error);
         return res.status(500).send("Internal Server Error");
     }
+    }
 };

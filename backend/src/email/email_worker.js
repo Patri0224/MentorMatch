@@ -1,4 +1,4 @@
-import db from '../src/db.js';
+import db from '../db.js';
 import nodemailer from 'nodemailer';
 import { renderTemplateByName } from './template_services.js';
 
