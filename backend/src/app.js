@@ -12,7 +12,6 @@ import messageRoutes from "../routes/message_routes.js";
 import reviewRoutes from "../routes/reviews_routes.js";
 
 const app = express();
-
 const FRONTEND_URL = process.env.FRONTEND_URL;
 
 // ✅ CORS (se hai frontend separato)
