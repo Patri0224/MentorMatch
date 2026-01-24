@@ -12,7 +12,7 @@ export const listMentors = async (req, res) => {
 
     try {
         const result = await db.query(
-            `SELECT m.id, m.name, m.sector, m.hourly_rate, m.languages, m.reviews_count, m.rating
+            `SELECT m.id, m.name, m.sector, m.hourly_rate, m.languages, m.review_count, m.rating, m.avatar_url
             FROM search_mentors($1, $2, $3, $4) m
             WHERE (
                 -- 1. Se nessun filtro temporale è attivo, mostra tutti
@@ -52,7 +52,7 @@ export const listMentors = async (req, res) => {
 
     } catch (error) {
         console.error("Errore durante la ricerca dei mentor:", error);
-        res.status(500).json({ message: "Errore interno durante la ricerca" });
+        res.status(500).json({ message: "Errore interno durante la ricerca" + error });
     }
 }
 
