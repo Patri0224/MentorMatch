@@ -21,7 +21,9 @@ export async function generaEmailReminder() {
                 data: {
                     name: booking.mentee_name,
                     startTime: booking.start_time
-                }
+                },
+                scheduleAt: null,
+                priority: 1
             });
         }
     } catch (error) {
