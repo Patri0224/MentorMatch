@@ -6,7 +6,7 @@ import {
     listmySessions,
     deleteSession,
     getMentorSessions
-} from '../src/controllers/sessions_controller.js';
+} from '../controllers/sessions_controller.js';
 
 const router = express.Router();
 
