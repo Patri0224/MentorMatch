@@ -1,4 +1,4 @@
-import db from '../src/db.js';
+import db from '../db.js';
 import { enqueueEmail } from '../email/email_service.js'
 
 export async function generaEmailReminder() {

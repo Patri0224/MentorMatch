@@ -1,5 +1,5 @@
 import express from 'express';
-import { authenticateToken } from '../src/middleware/auth_middleware';
+import { authenticateToken } from '../src/middleware/auth_middleware.js';
 import { requireRole } from '../src/middleware/role_middleware.js';
 import {
     createSession,

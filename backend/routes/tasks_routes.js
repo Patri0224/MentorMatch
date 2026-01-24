@@ -1,6 +1,6 @@
 import express from 'express';
-import { authenticateToken } from '../middleware/auth_middleware.js';
-import { processEmailQueue } from '../controllers/email_worker.js';
+import { authenticateToken } from '../src/middleware/auth_middleware.js';
+import { processEmailQueue } from '../src/email/email_worker.js';
 
 const router = express.Router();
 

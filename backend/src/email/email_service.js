@@ -1,4 +1,4 @@
-import db from '../src/db.js';
+import db from '../db.js';
 
 export async function enqueueEmail({type, recipient, data, priority = 1, scheduleAt = null}) {
     try {

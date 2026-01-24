@@ -1,5 +1,5 @@
 import express from 'express';
-import { authenticateToken } from '../src/middleware/auth_middleware';
+import { authenticateToken } from '../src/middleware/auth_middleware.js';
 import { answer_review, post_review } from '../controllers/reviews_controller.js';
 
 const router = express.Router();
