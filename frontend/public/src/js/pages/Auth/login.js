@@ -17,7 +17,7 @@ loginForm.addEventListener('submit', async function (e) {
         passwordError.classList.remove('d-none');
         return;
     }
-    if (password.length < 8 || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    if (password.length < 8) {
         passwordError.textContent = 'La password deve contenere almeno 8 caratteri, tra cui una maiuscola, un numero e un carattere speciale.';
         passwordError.classList.remove('d-none');
         return;
