@@ -128,7 +128,7 @@ const ApiService = {
         */
     async prenoteBooking(bookingData) {
         try {
-            const response = await fetch(`${API_BASE_URL} / bookings / checkout`, {
+            const response = await fetch(`${API_BASE_URL}/bookings/checkout`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ const ApiService = {
      */
     async getUserBookings() {
         try {
-            const response = await fetch(`${API_BASE_URL} / bookings / user_bookings`, {
+            const response = await fetch(`${API_BASE_URL}/bookings/user_bookings`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -173,7 +173,7 @@ const ApiService = {
      */
     async cancelBooking(bookingId, reason) {
         try {
-            const response = await fetch(`${API_BASE_URL} / bookings / cancel_booking`, {
+            const response = await fetch(`${API_BASE_URL}/bookings/cancel_booking`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -201,7 +201,7 @@ const ApiService = {
     //timestamp start_time, end_time,
     async createSession(sessionData) {
         try {
-            const response = await fetch(`${API_BASE_URL} / sessions / createSession`, {
+            const response = await fetch(`${API_BASE_URL}/sessions/createSession`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -222,7 +222,7 @@ const ApiService = {
      */
     async deleteSession(sessionId) {
         try {
-            const response = await fetch(`${API_BASE_URL} / sessions / ${sessionId}`, {
+            const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -244,7 +244,7 @@ const ApiService = {
          */
     async postMessage(messageData) {
         try {
-            const response = await fetch(`${API_BASE_URL} / messages / post_message`, {
+            const response = await fetch(`${API_BASE_URL}/messages/post_message`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -265,7 +265,7 @@ const ApiService = {
 
     async getMessages() {
         try {
-            const response = await fetch(`${API_BASE_URL} / messages /get_messages`, {
+            const response = await fetch(`${API_BASE_URL}/messages/get_messages`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -286,7 +286,7 @@ const ApiService = {
      */
     async markMessageAsRead(otherUserId) {
         try {
-            await fetch(`${API_BASE_URL} / messages / mark-as-read`, {
+            await fetch(`${API_BASE_URL}/messages/mark-as-read`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -303,7 +303,7 @@ const ApiService = {
      */
     async getChatHistory(otherUserId) {
         try {
-            const response = await fetch(`${API_BASE_URL} / messages / get_chat_history`, {
+            const response = await fetch(`${API_BASE_URL}/messages/get_chat_history`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -324,7 +324,7 @@ const ApiService = {
      */
     async searchMentors(filters) {
         try {
-            const response = await fetch(`${API_BASE_URL} / mentors / search`, {
+            const response = await fetch(`${API_BASE_URL}/mentors/search`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(filters)
@@ -343,7 +343,7 @@ const ApiService = {
      */
     async getAllSectors() {
         try {
-            const response = await fetch(`${API_BASE_URL} / mentors / get-sector`);
+            const response = await fetch(`${API_BASE_URL}/mentors/get-sector`);
             if (!response.ok) throw new Error('Errore caricamento settori ' + JSON.stringify(response, null, 2));
             return await response.json(); // Restituisce un array di stringhe
         } catch (error) {
@@ -358,7 +358,7 @@ const ApiService = {
      */
     async getMentorById(id) {
         try {
-            const response = await fetch(`${API_BASE_URL} / mentors / get-mentor / ${id}`);
+            const response = await fetch(`${API_BASE_URL}/mentors/get-mentor/${id}`);
             debugger;
             if (!response.ok) throw new Error('Profilo non trovato ' + JSON.stringify(response, null, 2));
             return await response.json();
@@ -374,7 +374,7 @@ const ApiService = {
      */
     async getMentorSessions(mentorId) {
         try {
-            const response = await fetch(`${API_BASE_URL} / sessions / mentor/ ${mentorId}`);
+            const response = await fetch(`${API_BASE_URL}/sessions/mentor/${mentorId}`);
             if (!response.ok) throw new Error('Errore caricamento sessioni ' + JSON.stringify(response, null, 2));
             return await response.json();
         } catch (error) {
@@ -389,7 +389,7 @@ const ApiService = {
      */
     async getMentorReviews(mentorId) {
         try {
-            const response = await fetch(`${API_BASE_URL} / mentors /reviews/${mentorId}`);
+            const response = await fetch(`${API_BASE_URL}/mentors/reviews/${mentorId}`);
             if (!response.ok) throw new Error('Errore caricamento recensioni ' + JSON.stringify(response, null, 2));
             return await response.json();
         } catch (error) {
@@ -408,7 +408,7 @@ const ApiService = {
      * (inclusi dati sessione e utente)
      */
     async getBookingDetails(bookingId) {
-        const response = await fetch(`${API_BASE_URL} / bookings / details.php ? id = ${bookingId}`);
+        const response = await fetch(`${API_BASE_URL}/bookings/details.php?id=${bookingId}`);
         if (!response.ok) throw new Error('Dettagli non trovati ' + JSON.stringify(response, null, 2));
         return await response.json();
     },
@@ -419,7 +419,7 @@ const ApiService = {
     */
     async deleteAccount(confirmDeletePassword) {
         try {
-            const response = await fetch(`${API_BASE_URL} / users / delete_account`, {
+            const response = await fetch(`${API_BASE_URL}/users/delete_account`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
