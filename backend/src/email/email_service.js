@@ -1,14 +1,14 @@
 import db from '../db.js';
 
-export async function enqueueEmail({type, recipient, data, priority = 1, scheduleAt = null}) {
+export async function enqueueEmail({type, recipient, data, scheduleAt = null, priority = 1}) {
     try {
         const result = await db.query(
             `
-            INSERT INTO email_queue (type, recipient, data, priority, scheduled_at, created_at)
-            VALUES ($1, $2, $3, $4,'pending', $5)
+            INSERT INTO email_queue (type, recipient, data, priority, scheduled_at)
+            VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING id
             `,
-            [type, recipient, data, priority, scheduleAt]
+            [type, recipient, data, priority, scheduleAt ]
         );
         return result.rows[0].id;
     } catch (error) {
