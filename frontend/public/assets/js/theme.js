@@ -22,4 +22,9 @@ function changeThemeOnClick() {
     const currentTheme = document.documentElement.getAttribute('data-bs-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
+    // Se il calendario esiste, ricarica gli eventi con i nuovi colori
+    if (typeof calendar !== 'undefined' && calendar !== null) {
+        calendar.refetchEvents(); // Chiede al calendario di rieseguire la funzione 'events'
+    }
+
 }

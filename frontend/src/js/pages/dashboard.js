@@ -486,24 +486,28 @@ async function initCalendar() {
             center: 'title',
             right: 'timeGridWeek,timeGridDay'
         },
+        // ... dentro initCalendar ...
         events: async function (info, successCallback, failureCallback) {
             try {
                 const events = [];
+                const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
 
-                // 1. Carica le Prenotazioni (Per tutti)
-                const bookings = await ApiService.getUserBookings();
+                // Caricamento Bookings
+                const bookings = await ApiService.getUserBookings(user.id, user.role);
                 bookings.forEach(b => {
                     events.push({
                         title: user.role === 'mentor' ? `Con: ${b.mentee_name}` : `Mentor: ${b.mentor_name}`,
                         start: b.start_time,
-                        end: b.end_time, // Assicurati che l'API restituisca end_time
-                        backgroundColor: '#0d6efd', // Blu Bootstrap
-                        borderColor: '#0d6efd',
-                        extendedProps: { type: 'booking', id: b.id }
+                        end: b.end_time,
+                        // Usiamo tinte leggermente diverse se siamo in Dark Mode per leggibilità
+                        backgroundColor: isDark ? '#1a73e8' : '#0d6efd',
+                        borderColor: isDark ? '#1a73e8' : '#0d6efd',
+                        textColor: '#ffffff',
+                        extendedProps: { type: 'booking' }
                     });
                 });
 
-                // 2. Carica le Sessioni Libere (Solo se Mentor)
+                // Caricamento Sessioni (Slot Liberi)
                 if (user.role === 'mentor') {
                     const sessions = await ApiService.getMentorSessions(user.id);
                     sessions.filter(s => s.available).forEach(s => {
@@ -511,18 +515,15 @@ async function initCalendar() {
                             title: 'Slot Disponibile',
                             start: s.start_time,
                             end: s.end_time,
-                            backgroundColor: '#198754', // Verde Bootstrap
-                            borderColor: '#198754',
-                            extendedProps: { type: 'session', id: s.id }
+                            backgroundColor: isDark ? '#1e7e34' : '#198754',
+                            borderColor: isDark ? '#1e7e34' : '#198754',
+                            textColor: '#ffffff',
+                            extendedProps: { type: 'session' }
                         });
                     });
                 }
-
                 successCallback(events);
-            } catch (error) {
-                console.error("Errore caricamento eventi calendario:", error);
-                failureCallback(error);
-            }
+            } catch (error) { failureCallback(error); }
         },
         eventClick: function (info) {
             // Reindirizza alle pagine di modifica che hai già
