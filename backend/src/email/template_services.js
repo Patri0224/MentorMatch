@@ -1,4 +1,4 @@
-import db from '../src/db.js';
+import db from '../db.js';
 
 function render(str, data) {
     return str.replace(/{{\s*([\w.]+)\s*}}/g, (_, key) => {
