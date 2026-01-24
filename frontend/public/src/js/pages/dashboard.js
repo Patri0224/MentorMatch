@@ -131,9 +131,10 @@ async function handleProfileUpdate(e) {
     try {
         // Inviamo il payload "snello" (solo i campi cambiati + userId)
         const result = await ApiService.updateUser(payload);
-
+        debugger;
         // Se il server risponde con il nuovo oggetto utente aggiornato
         if (result.user) {
+            debugger;
             // Aggiorniamo il localStorage con i dati uniti (vecchi + nuovi)
             const updatedUser = { ...currentUser, ...result.user };
             localStorage.setItem('user_data', JSON.stringify(updatedUser));
