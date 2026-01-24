@@ -57,18 +57,18 @@ export const getMentorById = async (req, res) => {
             [id]
         );
         if (result.rows.length === 0) {
-            return res.status(404).json({ message: "Mentor non trovato" });
+            return res.status(404).json({ message: "Mentor non trovato" + id });
         }
         res.json({ mentor: result.rows[0] });
     } catch (error) {
         console.error("Errore durante il recupero del mentor:", error);
         res.status(500).json({ message: "Errore del server durante il recupero del mentor" });
-    }   
+    }
 }
 
 export const getMentorsReviews = async (req, res) => {
     const { mentorId } = req.params;
-    try { 
+    try {
         const result = await db.query(
             `SELECT r.id, r.mentee_id, u.name AS mentee_name, r.rating, r.comment, r.response, r.created_at
             FROM reviews r
