@@ -52,7 +52,7 @@ export const listMentors = async (req, res) => {
 
     } catch (error) {
         console.error("Errore API listMentors:", error);
-        res.status(500).json({ message: "Errore durante la ricerca" });
+        res.status(500).json({ message: "Errore durante la ricerca " + error.message });
     }
 }
 
