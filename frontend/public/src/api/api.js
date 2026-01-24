@@ -249,7 +249,7 @@ const ApiService = {
          */
     async postMessage(messageData) {
         try {
-            const response = await fetch(`${API_BASE_URL}/messages/post_message`, {
+            const response = await fetch(`${API_BASE_URL}/messages/post-message`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -271,7 +271,7 @@ const ApiService = {
 
     async getMessages() {
         try {
-            const response = await fetch(`${API_BASE_URL}/messages/get_messages`, {
+            const response = await fetch(`${API_BASE_URL}/messages/get-messages`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -327,7 +327,7 @@ const ApiService = {
      */
     async getChatHistory(otherUserId) {
         try {
-            const response = await fetch(`${API_BASE_URL}/messages/get_chat_history`, {
+            const response = await fetch(`${API_BASE_URL}/messages/get-chat-history`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
