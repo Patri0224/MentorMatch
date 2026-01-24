@@ -23,7 +23,7 @@ export const listMentors = async (req, res) => {
                     SELECT 1
                     FROM sessions s
                     WHERE s.mentor_id = m.id
-                      AND s.status = 'available'
+                      AND s.available = 'available'
                       -- Filtro Data (se presente)
                       AND ($5::TIMESTAMP IS NULL OR s.start_time <= $5)
                       AND ($6::TIMESTAMP IS NULL OR s.end_time >= $6)
