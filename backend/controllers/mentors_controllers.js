@@ -62,7 +62,7 @@ export const getMentorById = async (req, res) => {
         res.json({ mentor: result.rows[0] });
     } catch (error) {
         console.error("Errore durante il recupero del mentor:", error);
-        res.status(500).json({ message: "Errore del server durante il recupero del mentor" });
+        res.status(500).json({ message: "Errore del server durante il recupero del mentor" + id });
     }
 }
 
