@@ -388,7 +388,7 @@ const ApiService = {
             const response = await fetch(`${API_BASE_URL}/sessions/mentor/${mentorId}`);
             const data = await response.json();
             if (!response.ok) throw new Error('Errore caricamento sessioni ' + JSON.stringify(data, null, 2));
-            return await response.json();
+            return data;
         } catch (error) {
             console.error("API Error (sessions):", error);
             throw error;

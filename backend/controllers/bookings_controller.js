@@ -139,16 +139,15 @@ export const createCheckoutBooking = async (req, res) => {
 };
 
 export const getUserBookings = async (req, res) => {
-    const bookingId = Number(req.params.bookingId);
     const userId = req.user.id;
 
     try {
         const result = await db.query(
             `
             SELECT * FROM bookings
-            WHERE id = $1 AND (mentee_id = $2 OR mentor_id = $2)
+            WHERE (mentee_id = $1 OR mentor_id = $1)
             `,
-            [bookingId, userId]
+            [userId]
         );
         if (result.rows.length === 0) {
             return res.status(404).json({ error: "Prenotazione non trovata!" });
