@@ -1,7 +1,7 @@
 import express from 'express';
 
 import { autenticateToken } from '../src/middleware/auth_middleware.js';
-import { cancelBooking, createCheckoutBooking, getUserBookings } from '../controllers/bookings_controllers.js';
+import { cancelBooking, createCheckoutBooking, getUserBookings } from '../controllers/bookings_controller.js';
 
 const router = express.Router();
 
