@@ -112,7 +112,7 @@ export const markAsRead = async (req, res) => {
             `
             UPDATE messages
             SET read = TRUE, read_at = NOW()
-            WHERE sender_id = $1 AND receiver_id = $2 AND read = FALSE
+            WHERE sender_id = $1 AND recipient_id = $2 AND read = FALSE
             `,
             [userId, fromUserId]
         );
