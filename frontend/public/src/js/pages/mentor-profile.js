@@ -226,7 +226,7 @@ async function sendMessage() {
         modal.hide();
         document.getElementById('messageContent').value = '';
     } catch (e) {
-        alert("Impossibile inviare il messaggio.");
+        alert("Impossibile inviare il messaggio."+ e.message);
     }
 }
 
