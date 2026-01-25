@@ -42,6 +42,7 @@ export const post_review = async (req, res) => {
 export const answer_review = async (req, res) => {
     const { reviewId, answer } = req.body;
     const userId = req.user.userId;
+    console.error("answer_review body:", req.body);
     try {
         const result = await db.query(
             `
@@ -49,9 +50,10 @@ export const answer_review = async (req, res) => {
             SET answer = $1
             WHERE id = $2 AND mentor_id = $3
             RETURNING id    
-            `
+            `,
             [answer, reviewId, userId]
         );
+        console.error("answer_review result:", result);
         if (result.rows.length === 0) {
             return res.status(404).json({ error: "Recensione non trovata o non autorizzato." });
         }
