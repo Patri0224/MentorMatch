@@ -584,7 +584,7 @@ async function loadMentorReviews(mentorId) {
     } catch (e) { console.error(e); }
 }
 document.querySelector('a[href="#reviews"]').addEventListener('shown.bs.tab', () => {
-    loadMentorReviews(AuthService.getUserId());
+    loadMentorReviews(AuthService.getUser().id);
 });
 /**
  * Invia la risposta del mentor al server

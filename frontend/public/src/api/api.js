@@ -337,7 +337,7 @@ const ApiService = {
                     'Content-Type': 'application/json',
                     "authorization": "Bearer " + AuthService.getUser().token
                 },
-                body: JSON.stringify({ other_user_id: otherUserId })
+                body: JSON.stringify({ withUserId: otherUserId })
             });
             const data = await response.json();
             if (!response.ok) throw new Error('Errore nel recupero della chat history ' + JSON.stringify(data, null, 2));
