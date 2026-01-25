@@ -15,7 +15,7 @@ CREATE TABLE users (
     hourly_rate DECIMAL(10, 2) DEFAULT 0,
     rating DECIMAL(3, 2) DEFAULT 0,
     review_count INTEGER DEFAULT 0,
-    avatar_url VARCHAR(500), 
+    avatar_url TEXT, 
     meeting_url VARCHAR(500),
     stripe_customer_id VARCHAR(255),
     stripe_account_id VARCHAR(255),

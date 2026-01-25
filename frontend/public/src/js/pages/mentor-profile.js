@@ -218,7 +218,6 @@ async function sendMessage() {
             recipientId: mentorId,
             content: content
         });
-        alert("Messaggio inviato correttamente!");
 
         // Chiudi il modale
         const modal = bootstrap.Modal.getInstance(document.getElementById('messageModal'));
