@@ -27,7 +27,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             tab.show();
         }
     }
+    document.getElementById('editAvatar').addEventListener('input', (e) => {
+        const newUrl = e.target.value.trim();
+        const preview = document.getElementById('profileAvatar');
 
+        // Se il campo è vuoto, usa l'avatar di default
+        preview.src = newUrl || 'assets/default-avatar.png';
+    });
     // 2. Ascolta il cambio di tab per aggiornare l'URL
     const tabEls = document.querySelectorAll('#dashboardNav a[data-bs-toggle="tab"]');
     tabEls.forEach(tabEl => {
@@ -59,7 +65,8 @@ async function loadUserProfile(userId) {
         document.getElementById('editEmail').value = data.user.email;
         document.getElementById('editBio').value = data.user.bio || '';
         document.getElementById('editNotif').checked = data.user.email_notifications;
-
+        document.getElementById('editAvatar').value = data.user.avatar_url || '';
+        document.getElementById('profileAvatar').src = data.user.avatar_url || 'assets/default-avatar.png';
         if (data.user.role === 'mentor') {
             document.getElementById('editLanguage').value = (data.user.languages && data.user.languages.length > 0) ? data.user.languages.join(', ') : '';
             document.getElementById('editSector').value = data.user.sector || '';
@@ -99,7 +106,7 @@ async function handleProfileUpdate(e) {
     // --- 1. CONFRONTO CAMPI COMUNI ---
     addIfChanged('name', data.name.trim(), currentUser.name);
     addIfChanged('bio', data.bio.trim(), currentUser.bio);
-
+    addIfChanged('avatar_url', data.avatar_url.trim(), currentUser.avatar_url);
     const notifChecked = document.getElementById('editNotif').checked;
     addIfChanged('email_notifications', notifChecked, currentUser.email_notifications);
 

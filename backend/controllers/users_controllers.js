@@ -13,6 +13,7 @@ export const updateProfile = async (req, res) => {
         "languages",
         "meeting_url",
         "hourly_rate",
+        "avatar_url"
     ];
 
     const updates = {};
