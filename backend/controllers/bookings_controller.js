@@ -41,10 +41,18 @@ export const createCheckoutBooking = async (req, res) => {
 
         const bRes = await db.query(
             `
-            INSERT INTO bookings (mentee_id, mentor_id, session_id, note, status)
-            VALUES ($1, $2, $3, $4, 'confirmed')
-            RETURNING id
-            `,
+    INSERT INTO bookings (mentee_id, mentor_id, session_id, note, status, meeting_url)
+    SELECT 
+        $1,              -- mentee_id
+        $2,              -- mentor_id
+        $3,              -- session_id
+        $4,              -- note
+        'confirmed',     -- status
+        u.meeting_url    -- Prendiamo l'url dalla tabella users
+    FROM users u
+    WHERE u.id = $2      -- Filtriamo per l'ID del mentor
+    RETURNING id;
+    `,
             [menteeId, session.mentor_id, session.id, note || null]
         );
 
