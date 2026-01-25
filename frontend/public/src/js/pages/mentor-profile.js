@@ -243,7 +243,7 @@ async function submitReview() {
 
     try {
         const reviewData = {
-            mentorId: mentorId,
+            mentor_id: mentorId,
             rating: parseInt(rating),
             comment: comment
         };
