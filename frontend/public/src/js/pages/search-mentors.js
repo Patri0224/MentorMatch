@@ -6,10 +6,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- 1. CARICAMENTO DATI INIZIALE ---
     try {
         const res = await ApiService.getAllSectors();
-        // Supportiamo sia se l'API restituisce {sectors: []} sia [] direttamente
-        allSectors = res.sectors || res;
+        
+        // Trasformiamo l'array di oggetti [{sector: '...'}] in un array di stringhe ['...']
+        const rawData = res.sectors || res;
+        allSectors = rawData.map(item => typeof item === 'object' ? item.sector : item);
+        
+        console.log("Settori caricati e normalizzati:", allSectors); 
     } catch (error) {
-        console.error("Errore caricamento settori");
+        console.error("Errore caricamento settori:", error);
     }
 
     // --- 2. LOGICA AUTOCOMPLETE ---
