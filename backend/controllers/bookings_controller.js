@@ -52,7 +52,7 @@ export const createCheckoutBooking = async (req, res) => {
         const bookingId = bRes.rows[0].id;
 
         const totaledaPagare = Number(session.hourly_rate);
-        if (Number.isNaN(totaledaPagare) || totaledaPagare <= 0) {
+        if (Number.isNaN(totaledaPagare) || totaledaPagare < 0) {
             await db.query('ROLLBACK');
             return res.status(400).json({ error: "Tariffa oraria non valida!" });
         }
@@ -65,7 +65,7 @@ export const createCheckoutBooking = async (req, res) => {
             `,
             [bookingId, totaledaPagare, 'eur', 'pending']
         );
-
+/*
         const paymentId = pRes.rows[0].id;
 
         const checkoutSession = await stripe.checkout.sessions.create({
@@ -100,7 +100,7 @@ export const createCheckoutBooking = async (req, res) => {
             [checkoutSession.id, paymentId]
         );
         await db.query('COMMIT');
-
+*/
         //Mail di notifica avvenuta prenotazione
         const userResult = await db.query(
             `
