@@ -107,7 +107,7 @@ export const deleteSession = async (req, res) => {
             `
             SELECT 1
             FROM bookings
-            WHERE session_id = $1
+            WHERE session_id = $1 AND status <> 'cancelled'
             LIMIT 1;
             `,
             [sessionId]
