@@ -377,8 +377,8 @@ async function refreshMessages() {
 
     try {
         // Recuperiamo i messaggi tramite API
-        const messages = await ApiService.getChatHistory(activeChatUserId);
-
+        const oggMessages = await ApiService.getChatHistory(activeChatUserId);
+        const messages = oggMessages.messages || [];
         container.innerHTML = messages.map(m => {
             const isMe = m.sender_id === myId;
 
