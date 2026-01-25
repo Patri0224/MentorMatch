@@ -6,7 +6,7 @@ import { enqueueEmail } from "../src/email/email_service.js";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const createCheckoutBooking = async (req, res) => {
-    const menteeId = req.user.id;
+    const menteeId = req.user.userId;
     const { sessionId, note } = req.body;
 
     if (!sessionId) {
@@ -139,7 +139,7 @@ export const createCheckoutBooking = async (req, res) => {
 };
 
 export const getUserBookings = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     try {
         const result = await db.query(
