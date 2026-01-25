@@ -6,7 +6,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- 1. CARICAMENTO DATI INIZIALE ---
     try {
         // Supponendo che la tua API restituisca un array di stringhe: ["marketing", "design", "sviluppo"]
-        allSectors = await ApiService.getAllSectors();
+        const oggAllSectors = await ApiService.getAllSectors();
+        allSectors = oggAllSectors.sectors || [];
     } catch (error) {
         console.error("Impossibile caricare i settori per l'autocompletamento");
     }
@@ -102,9 +103,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             // 3. Chiamata API (ApiService dovrà interrogare la funzione SQL search_mentors)
             const mentors = await ApiService.searchMentors(filters);
-/*
-id, name, sector, hourly_rate, languages, review_count, rating
-*/
+            /*
+            id, name, sector, hourly_rate, languages, review_count, rating
+            */
             // 4. Rendering dei risultati
             renderMentorList(mentors);
         } catch (error) {
