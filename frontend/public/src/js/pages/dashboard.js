@@ -512,7 +512,8 @@ async function initCalendar() {
 
                 // Caricamento Sessioni (Slot Liberi)
                 if (user.role === 'mentor') {
-                    const sessions = await ApiService.getMentorSessions(user.id);
+                    const osessions = await ApiService.getMentorSessions(user.id);
+                    const sessions = osessions.sessions || [];
                     sessions.filter(s => s.available).forEach(s => {
                         events.push({
                             title: 'Slot Disponibile',
