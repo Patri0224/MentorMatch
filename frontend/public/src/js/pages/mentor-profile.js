@@ -216,7 +216,7 @@ async function sendMessage() {
     try {
         await ApiService.postMessage({
             sender_id: AuthService.getUserId(),
-            recipient_id: mentorId,
+            recipientId: mentorId,
             content: content
         });
         alert("Messaggio inviato correttamente!");
