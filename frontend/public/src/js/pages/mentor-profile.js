@@ -56,8 +56,8 @@ function updateUIForAuth() {
  */
 async function loadMentorData() {
     try {
-        const mentor = await ApiService.getMentorById(mentorId);
-
+        const oggMentor = await ApiService.getMentorById(mentorId);
+        const mentor = oggMentor.user;
         document.getElementById('mentorName').innerText = mentor.name;
         document.getElementById('mentorBio').innerText = mentor.bio || "Nessuna biografia disponibile.";
         document.getElementById('mentorSector').innerText = mentor.sector;
@@ -87,35 +87,6 @@ async function loadMentorData() {
 /**
  * Carica le sessioni disponibili dalla tabella 'sessions'
  */
-/*
-
-
-
-
-
-
-
-
-
-
-chiedi di rifare
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*/
 async function loadAvailableSessions() {
     const list = document.getElementById('sessionsList');
     if (!list) return;
