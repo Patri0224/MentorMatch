@@ -185,7 +185,7 @@ async function loadReviews() {
 /**
  * Azione: Prenota una sessione (Tabella 'bookings')
  */
-async function bookSession(sessionId) {
+async function bookSession(session_Id) {
     if (!AuthService.isLoggedIn()) {
         alert("Devi accedere per prenotare una lezione.");
         window.location.href = 'login.html';
@@ -195,10 +195,8 @@ async function bookSession(sessionId) {
     if (!confirm("Confermi la prenotazione per questa sessione?")) return;
 
     try {
-        await ApiService.createBooking({
-            session_id: sessionId,
-            mentor_id: mentorId,
-            mentee_id: AuthService.getUser().id,
+        await ApiService.prenoteBooking({
+            sessionId: session_Id,
             note: "Prenotazione effettuata dal profilo pubblico"
         });
         alert("Prenotazione completata! Controlla la tua Dashboard.");
