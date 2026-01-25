@@ -68,7 +68,8 @@ export const createCheckoutBooking = async (req, res) => {
 
         const paymentIntentId = pRes.rows[0].id;
 
-        const test = true;
+        let test = process.env.TEST === 'true' || process.env.TEST === '1';
+        test = true;
         const free = totaledaPagare === 0 || totaledaPagare === 0.0 || totaledaPagare === 0.00 || test === true;
         if (free) {
             // Prenotazione gratuita, imposto pagamento come completato
