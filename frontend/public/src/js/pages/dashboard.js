@@ -514,7 +514,7 @@ async function initCalendar() {
                 if (user.role === 'mentor') {
                     const osessions = await ApiService.getMentorSessions(user.id);
                     const sessions = osessions.sessions || [];
-                    sessions.filter(s => s.available).forEach(s => {
+                    sessions.forEach(s => {
                         events.push({
                             title: 'Slot Disponibile',
                             start: s.start_time,
