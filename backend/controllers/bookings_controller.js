@@ -65,42 +65,73 @@ export const createCheckoutBooking = async (req, res) => {
             `,
             [bookingId, totaledaPagare, 'eur', 'pending']
         );
-/*
-        const paymentId = pRes.rows[0].id;
 
-        const checkoutSession = await stripe.checkout.sessions.create({
-            mode: 'payment',
-            line_items: [
-                {
-                    price_data: {
-                        currency: 'eur',
-                        product_data: {
-                            name: `Sessione con ${session.mentor_name}`,
+
+        const test = true;
+        const free = totaledaPagare === 0 || totaledaPagare === 0.0 || totaledaPagare === 0.00 || test === true;
+        if (free) {
+            // Prenotazione gratuita, imposto pagamento come completato
+            await db.query("BEGIN");
+            await db.query(
+                `
+        UPDATE payments
+        SET status = 'completed'
+        WHERE id = $1
+      `,
+                [paymentIntentId]
+            );
+
+            await db.query(
+                `
+        UPDATE sessions
+        SET available = 'FALSE'
+        WHERE id = $1
+      `,
+                [sessionId]
+            );
+
+            await db.query("COMMIT");
+
+
+        } else {
+
+            const paymentId = pRes.rows[0].id;
+
+            const checkoutSession = await stripe.checkout.sessions.create({
+                mode: 'payment',
+                line_items: [
+                    {
+                        price_data: {
+                            currency: 'eur',
+                            product_data: {
+                                name: `Sessione con ${session.mentor_name}`,
+                            },
+                            unit_amount: Math.round(totaledaPagare * 100),
                         },
-                        unit_amount: Math.round(totaledaPagare * 100),
+                        quantity: 1,
                     },
-                    quantity: 1,
-                },
-            ],
-            mode: 'payment',
-            success_url: `${process.env.CLIENT_URL}/success?session_id=${bookingId}`,
-            cancel_url: `${process.env.CLIENT_URL}/cancel`,
-            metadata: {
-                paymentId: String(paymentId),
-                bookingId: String(bookingId),
-                sessionId: String(session.id)
-            }
-        });
+                ],
+                mode: 'payment',
+                success_url: `${process.env.CLIENT_URL}/success?session_id=${bookingId}`,
+                cancel_url: `${process.env.CLIENT_URL}/cancel`,
+                metadata: {
+                    paymentId: String(paymentId),
+                    bookingId: String(bookingId),
+                    sessionId: String(session.id)
+                }
+            });
 
-        //Checkout session creato, aggiorno il payment con l'id della sessione
-        await db.query(
-            `
-            UPDATE payments SET stripe_session_id = $1 WHERE id = $2
-            `,
-            [checkoutSession.id, paymentId]
-        );
-        await db.query('COMMIT');
-*/
+            //Checkout session creato, aggiorno il payment con l'id della sessione
+            await db.query(
+                `
+                    UPDATE payments SET stripe_session_id = $1 WHERE id = $2
+                    `,
+                [checkoutSession.id, paymentId]
+            );
+            await db.query('COMMIT');
+        }
+
+
         //Mail di notifica avvenuta prenotazione
         const userResult = await db.query(
             `
@@ -126,10 +157,16 @@ export const createCheckoutBooking = async (req, res) => {
                 priority: 1
             });
         }
-        return res.status(201).json({
-            checkoutUrl: checkoutSession.url,
-            booking_id: bookingId,
-        });
+        if (free) {
+            return res.status(201).json({
+                booking_id: bookingId,
+            });
+        } else {
+            return res.status(201).json({
+                checkoutUrl: checkoutSession.url,
+                booking_id: bookingId,
+            });
+        }
     } catch (error) {
         try { await db.query('ROLLBACK'); }
         catch (e) { console.error('Rollback error:', e); }
@@ -161,12 +198,12 @@ export const getUserBookings = async (req, res) => {
 
 export const cancelBooking = async (req, res) => {
     const userId = req.user.userId;
-  const bookingId = Number(req.params.id);
-  const { reason } = req.body ?? {};
+    const bookingId = Number(req.params.id);
+    const { reason } = req.body ?? {};
 
-  await db.query("BEGIN");
+    await db.query("BEGIN");
 
-  const bookingCheck = await db.query(
+    const bookingCheck = await db.query(
         `
         SELECT mentee_id, mentor_id, session_id, status
         FROM bookings
@@ -197,9 +234,9 @@ export const cancelBooking = async (req, res) => {
     }
 
 
-  // 1) prendo booking + payment
-  const infoRes = await db.query(
-    `
+    // 1) prendo booking + payment
+    const infoRes = await db.query(
+        `
     SELECT b.id, b.status, b.mentor_id, b.mentee_id, b.session_id,
            p.id AS payment_id, p.status AS payment_status, p.amount, p.stripe_session_id
     FROM bookings b
@@ -207,33 +244,33 @@ export const cancelBooking = async (req, res) => {
     WHERE b.id = $1
     FOR UPDATE
     `,
-    [bookingId]
-  );
+        [bookingId]
+    );
 
-  if (infoRes.rows.length === 0) { await db.query("ROLLBACK"); return res.status(404).json({error:"Booking non trovata"}); }
+    if (infoRes.rows.length === 0) { await db.query("ROLLBACK"); return res.status(404).json({ error: "Booking non trovata" }); }
 
-  const row = infoRes.rows[0];
-  if (row.mentor_id !== userId && row.mentee_id !== userId) {
-    await db.query("ROLLBACK"); return res.status(403).json({error:"Non autorizzato"});
-  }
+    const row = infoRes.rows[0];
+    if (row.mentor_id !== userId && row.mentee_id !== userId) {
+        await db.query("ROLLBACK"); return res.status(403).json({ error: "Non autorizzato" });
+    }
 
-  // 2) se pagamento completato => refund
-  if (row.payment_status === "completed" && row.stripe_session_id) {
-    // Recupero checkout session per ottenere payment_intent
-    const checkout = await stripe.checkout.sessions.retrieve(row.stripe_session_id);
-    const paymentIntentId = checkout.payment_intent;
+    // 2) se pagamento completato => refund
+    if (row.payment_status === "completed" && row.stripe_session_id) {
+        // Recupero checkout session per ottenere payment_intent
+        const checkout = await stripe.checkout.sessions.retrieve(row.stripe_session_id);
+        const paymentIntentId = checkout.payment_intent;
 
-    // Creo refund (totale). Stripe supporta refund via payment_intent. :contentReference[oaicite:2]{index=2}
-    const refund = await stripe.refunds.create({
-      payment_intent: paymentIntentId,
-      reason: "requested_by_customer", // o "duplicate"/"fraudulent"
-      // amount: Math.round(Number(row.amount) * 100) // se vuoi parziale
-      metadata: { booking_id: String(bookingId) },
-    });
+        // Creo refund (totale). Stripe supporta refund via payment_intent. :contentReference[oaicite:2]{index=2}
+        const refund = await stripe.refunds.create({
+            payment_intent: paymentIntentId,
+            reason: "requested_by_customer", // o "duplicate"/"fraudulent"
+            // amount: Math.round(Number(row.amount) * 100) // se vuoi parziale
+            metadata: { booking_id: String(bookingId) },
+        });
 
-    // aggiorno DB
-    await db.query(
-      `
+        // aggiorno DB
+        await db.query(
+            `
       UPDATE payments
       SET status = 'refunded',
           refunded_at = NOW(),
@@ -242,13 +279,13 @@ export const cancelBooking = async (req, res) => {
           transaction_id = COALESCE(transaction_id, $3)
       WHERE id = $4
       `,
-      [reason ?? null, paymentIntentId, refund.id, row.payment_id]
-    );
-  }
+            [reason ?? null, paymentIntentId, refund.id, row.payment_id]
+        );
+    }
 
-  // 3) cancello booking + rilascio session
-  await db.query(
-    `
+    // 3) cancello booking + rilascio session
+    await db.query(
+        `
     UPDATE bookings
     SET status='cancelled',
         cancellation_reason=$1,
@@ -256,15 +293,14 @@ export const cancelBooking = async (req, res) => {
         cancelled_at=NOW()
     WHERE id=$3
     `,
-    [reason ?? null, userId, bookingId]
-  );
+        [reason ?? null, userId, bookingId]
+    );
 
-  await db.query(`UPDATE sessions SET available = TRUE WHERE id = $1`, [row.session_id]);
+    await db.query(`UPDATE sessions SET available = TRUE WHERE id = $1`, [row.session_id]);
 
-  await db.query("COMMIT");
-  return res.json({ message: "Booking cancellata (e rimborsata se pagata)" });
+    await db.query("COMMIT");
+    return res.json({ message: "Booking cancellata (e rimborsata se pagata)" });
 };
 
 
 
- 

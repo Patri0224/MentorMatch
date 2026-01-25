@@ -142,7 +142,11 @@ const ApiService = {
                 throw new Error(err.message || 'Errore prenotazione');
             }
             const result = await response.json();
-            window.location.href = result.checkout_url;
+            if (result.checkout_url)
+                window.location.href = result.checkout_url;
+            else
+                window.location.reload();
+            return result;
         } catch (error) {
             console.error("API Error (booking):", error);
             throw error;
