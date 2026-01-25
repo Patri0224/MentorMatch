@@ -28,7 +28,13 @@
             <h2 class="fw-bold text-primary">MentorMatch</h2>
             <p class="text-body-secondary">Benvenuto! Inserisci il tuo nome per entrare.</p>
         </div>
+        <div id="generalError" class="alert alert-danger d-none" role="alert">
+            Credenziali non valide. Riprova.
+        </div>
 
+        <div class="d-grid">
+            <button type="submit" id="loginBtn" class="btn btn-primary">Accedi</button>
+        </div>
         <form id="loginForm">
             <div class="mb-3">
                 <label for="usernameInput" class="form-label">E-mail</label>

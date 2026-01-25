@@ -223,9 +223,8 @@ export const getUserBookings = async (req, res) => {
 
 export const cancelBooking = async (req, res) => {
     const userId = req.user.userId;
-    const bookingId = Number(req.params.id);
-    const { reason } = req.body ?? {};
-
+    const { booking_id, reason } = req.body ?? {};
+    const bookingId = Number(booking_id);
     await db.query("BEGIN");
 
     const bookingCheck = await db.query(
