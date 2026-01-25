@@ -183,8 +183,22 @@ export const getUserBookings = async (req, res) => {
     try {
         const result = await db.query(
             `
-            SELECT * FROM bookings
-            WHERE (mentee_id = $1 OR mentor_id = $1)
+            SELECT 
+                b.id,
+                b.status,
+                b.note,
+                b.meeting_url,
+                s.start_time,
+                m.name AS mentor_name,
+                me.name AS mentee_name,
+                p.status AS payment_status
+            FROM bookings b
+            JOIN sessions s ON b.session_id = s.id
+            JOIN users m ON b.mentor_id = m.id
+            JOIN users me ON b.mentee_id = me.id
+            LEFT JOIN payments p ON b.id = p.booking_id
+            WHERE b.mentee_id = $1 OR b.mentor_id = $1
+            ORDER BY s.start_time DESC
             `,
             [userId]
         );
