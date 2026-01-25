@@ -320,7 +320,7 @@ const ApiService = {
                     'Content-Type': 'application/json',
                     "authorization": "Bearer " + AuthService.getUser().token
                 },
-                body: JSON.stringify({ fromUserId: otherUserId })
+                body: JSON.stringify({ fromUserId: fromUserId })
             });
         } catch (error) {
             console.error("API Error (readMessage):", error);
