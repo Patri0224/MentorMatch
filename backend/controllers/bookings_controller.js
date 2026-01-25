@@ -4,7 +4,7 @@ import Stripe from "stripe";
 import { enqueueEmail } from "../src/email/email_service.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
+const test = true
 export const createCheckoutBooking = async (req, res) => {
     const menteeId = req.user.userId;
     const { sessionId, note } = req.body;
@@ -75,8 +75,7 @@ export const createCheckoutBooking = async (req, res) => {
         );
 
 
-        let test = process.env.TEST === 'true' || process.env.TEST === '1';
-        test = true;
+
         const free = totaledaPagare === 0 || totaledaPagare === 0.0 || totaledaPagare === 0.00 || test === true;
         if (free) {
             const paymentIntentId = pRes.rows[0].id;
@@ -279,7 +278,7 @@ export const cancelBooking = async (req, res) => {
     }
 
     // 2) se pagamento completato => refund
-    if (row.payment_status === "completed" && row.stripe_session_id) {
+    if (row.payment_status === "completed" && row.stripe_session_id && test === false) {
         // Recupero checkout session per ottenere payment_intent
         const checkout = await stripe.checkout.sessions.retrieve(row.stripe_session_id);
         const paymentIntentId = checkout.payment_intent;
