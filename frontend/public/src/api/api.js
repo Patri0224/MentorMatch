@@ -495,7 +495,7 @@ const ApiService = {
                     'Content-Type': 'application/json',
                     'authorization': 'Bearer ' + AuthService.getUser().token
                 },
-                body: JSON.stringify({ reviewId, response: responseText })
+                body: JSON.stringify({ reviewId, answer: responseText })
             });
             const data = await response.json();
             if (!response.ok) throw new Error('Errore durante l\'invio della risposta della recensione ' + JSON.stringify(data, null, 2));
