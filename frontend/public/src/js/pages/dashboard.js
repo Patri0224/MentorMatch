@@ -546,8 +546,9 @@ async function initCalendar() {
 async function loadMentorReviews(mentorId) {
     const container = document.getElementById('mentorReviewsContainer');
     try {
-        const reviews = await ApiService.getMentorReviews(mentorId);
-
+        const oreviews = await ApiService.getMentorReviews(mentorId);
+        const reviews = oreviews.reviews || [];
+        container.innerHTML = '';
         if (reviews.length === 0) {
             container.innerHTML = '<p class="text-muted">Non hai ancora ricevuto recensioni.</p>';
             return;
