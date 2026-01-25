@@ -50,7 +50,7 @@ export const updateProfile = async (req, res) => {
         // FIX: RETURNING corretto (evitiamo di restituire la password)
         const query = `
             UPDATE users SET ${setClause} 
-            WHERE id = $${values.length} 
+            WHERE id = $${values.length-1} 
             RETURNING id, name, email, bio, sector, languages, meeting_url, hourly_rate, avatar_url;
         `;
 
