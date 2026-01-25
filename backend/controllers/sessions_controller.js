@@ -47,7 +47,7 @@ export const createSession = async (req, res) => {
             VALUES ($1, $2, $3, $4, $5)
             RETURNING *;
             `,
-            [mentorId, start, end, timeduration, TRUE]);
+            [mentorId, start, end, timeduration, true]);
         res.status(201).json({ message: "Sessione creata!", session: result.rows[0], cod: 1 });
     } catch (error) {
         console.error("Errore durante la creazione della sessione:", error);
