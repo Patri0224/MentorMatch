@@ -4,7 +4,7 @@ import { enqueueEmail } from '../src/email/email_service.js';
 export const post_review = async (req, res) => {
     const body = req.body;
     console.error("post_review body:", body);
-    const { mentorId, rating, comment } = body;
+    const { mentor_id, rating, comment } = body;
     const userId = req.user.id;
     try {
         const result = await db.query(
@@ -13,7 +13,7 @@ export const post_review = async (req, res) => {
             VALUES ($1, $2, $3, $4)
             RETURNING id
             `,
-            [mentorId, userId, rating, comment]
+            [mentor_id, userId, rating, comment]
         );
         res.status(201).json({ message: "Recensione inviata con successo", reviewId: result.rows[0].id });
         const userResult = await db.query(
@@ -22,13 +22,13 @@ export const post_review = async (req, res) => {
             FROM users
             WHERE id = $1 AND email_notifications = TRUE
             `,
-            [mentorId]
+            [mentor_id]
         );
         if (userResult.rows.length > 0) {
             await enqueueEmail({
                 type: 'new_review',
                 recipient: userResult.rows[0].email,
-                data: { name: req.user.name, mentorId: mentorId },
+                data: { name: req.user.name, mentorId: mentor_id },
                 scheduleAt: null,
                 priority: 1
             });
