@@ -20,7 +20,7 @@ Per eseguire il progetto in locale:
 ### 1️ Clona il repository
 
 ```bash
-git clone https://github.com/<tuo-username>/mentormatch.git
+git clone https://github.com/Patri0224/MentorMatch
 cd mentormatch/backend
 ```
 
