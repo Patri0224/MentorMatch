@@ -347,7 +347,7 @@ async function loadConversations() {
                 </button>
             `;
         });
-    } catch (e) { list.innerHTML = '<div class="p-3 text-danger">Errore caricamento messaggi.</div>'; }
+    } catch (e) { list.innerHTML = `<div class="p-3 text-danger">Errore caricamento messaggi.${e.message}</div>`; }
 }
 
 /**
