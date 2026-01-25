@@ -66,12 +66,12 @@ export const createCheckoutBooking = async (req, res) => {
             [bookingId, totaledaPagare, 'eur', 'pending']
         );
 
-        const paymentIntentId = pRes.rows[0].id;
 
         let test = process.env.TEST === 'true' || process.env.TEST === '1';
         test = true;
         const free = totaledaPagare === 0 || totaledaPagare === 0.0 || totaledaPagare === 0.00 || test === true;
         if (free) {
+            const paymentIntentId = pRes.rows[0].id;
             // Prenotazione gratuita, imposto pagamento come completato
             await db.query("BEGIN");
             await db.query(
