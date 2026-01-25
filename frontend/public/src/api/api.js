@@ -312,7 +312,7 @@ const ApiService = {
     /**
      * Segna un messaggio come letto (aggiorna 'read' e 'read_at')
      */
-    async markMessageAsRead(otherUserId) {
+    async markMessageAsRead(fromUserId) {
         try {
             await fetch(`${API_BASE_URL}/messages/mark-as-read`, {
                 method: 'POST',
@@ -320,7 +320,7 @@ const ApiService = {
                     'Content-Type': 'application/json',
                     "authorization": "Bearer " + AuthService.getUser().token
                 },
-                body: JSON.stringify({ other_user_id: otherUserId })
+                body: JSON.stringify({ fromUserId: otherUserId })
             });
         } catch (error) {
             console.error("API Error (readMessage):", error);
