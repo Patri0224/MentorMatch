@@ -265,7 +265,6 @@ export const cancelBooking = async (req, res) => {
     FROM bookings b
     LEFT JOIN payments p ON p.booking_id = b.id
     WHERE b.id = $1
-    FOR UPDATE
     `,
         [bookingId]
     );
