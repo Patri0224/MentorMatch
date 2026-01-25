@@ -198,7 +198,7 @@ async function bookSession(sessionId) {
         await ApiService.createBooking({
             session_id: sessionId,
             mentor_id: mentorId,
-            mentee_id: AuthService.getUserId(),
+            mentee_id: AuthService.getUser().id,
             note: "Prenotazione effettuata dal profilo pubblico"
         });
         alert("Prenotazione completata! Controlla la tua Dashboard.");
