@@ -97,7 +97,7 @@ export const getMentorSessions = async (req, res) => {
 };
 
 export const deleteSession = async (req, res) => {
-    const mentorId = req.user.id;
+    const mentorId = req.user.userId;
     const sessionId = Number(req.params.sessionId);
     if (Number.isNaN(sessionId)) {
         return res.status(400).json({ message: "ID sessione non valido" });
