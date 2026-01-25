@@ -167,7 +167,7 @@ async function loadBookings(userId, role) {
     try {
         // Passiamo userId e role all'API per filtrare correttamente lato server
         const oggBookings = await ApiService.getUserBookings();
-        const bookings = oggBookings.bookings || [];
+        const bookings = oggBookings.booking || [];
 
         if (bookings.length === 0) {
             tableBody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted">Nessuna prenotazione trovata.</td></tr>';
