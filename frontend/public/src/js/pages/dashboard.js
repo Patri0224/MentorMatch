@@ -336,7 +336,18 @@ async function handleAddSession(e) {
         loadMentorSessions(AuthService.getUser().id);
     } catch (e) { alert("Errore: " + e.message); }
 }
-
+/*
+* Elimina uno slot di disponibilità
+*/
+async function handleDeleteSession(sessionId) {
+    const confirmDelete = confirm("Sei sicuro di voler eliminare questo slot? Tutte le prenotazioni associate verranno annullate.");
+    if (!confirmDelete) return;
+    try {
+        await ApiService.deleteSession(sessionId);
+        alert("Slot eliminato.");
+        loadMentorSessions(AuthService.getUser().id);
+    } catch (e) { alert("Errore: " + e.message); }
+}
 
 /**
  * Carica la lista degli utenti con cui c'è una conversazione attiva
@@ -442,7 +453,7 @@ async function handleDeleteAccount() {
     // Seconda conferma (Protezione extra)
     const securityCheck = prompt("Per confermare l'eliminazione definitiva, immetti la tua password nel campo sottostante:");
 
-   
+
 
     try {
         // Chiamata API alla tabella 'users'
