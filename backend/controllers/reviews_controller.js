@@ -7,7 +7,7 @@ export const post_review = async (req, res) => {
     try {
         const result = await db.query(
             `
-            INSERT INTO reviews (mentor_id, user_id, rating, comment)
+            INSERT INTO reviews (mentor_id, mentee_id, rating, comment)
             VALUES ($1, $2, $3, $4)
             RETURNING id
             `,
