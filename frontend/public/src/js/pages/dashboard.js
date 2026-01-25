@@ -17,6 +17,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('sessionForm').addEventListener('submit', handleAddSession);
         loadMentorSessions(user.id);
     }
+    const currentHash = window.location.hash;
+    if (currentHash) {
+        // Cerchiamo il link nel menu laterale che corrisponde all'hash
+        const activeTabTriggerEl = document.querySelector(`#dashboardNav a[href="${currentHash}"]`);
+        if (activeTabTriggerEl) {
+            // Usiamo l'API di Bootstrap per mostrare il tab
+            const tab = new bootstrap.Tab(activeTabTriggerEl);
+            tab.show();
+        }
+    }
+
+    // 2. Ascolta il cambio di tab per aggiornare l'URL
+    const tabEls = document.querySelectorAll('#dashboardNav a[data-bs-toggle="tab"]');
+    tabEls.forEach(tabEl => {
+        tabEl.addEventListener('shown.bs.tab', (event) => {
+            // Aggiorna l'hash nell'URL senza ricaricare la pagina
+            window.location.hash = event.target.getAttribute('href');
+        });
+    });
 });
 
 /**
