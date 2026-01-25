@@ -11,16 +11,23 @@ export const listMentors = async (req, res) => {
         time_of_day
     } = req.query;
 
+    // 1. Mappatura Numerica della fascia oraria
+    const timeMap = {
+        "mattina": 1,
+        "pomeriggio": 2,
+        "sera": 3
+    };
+    const timeValue = timeMap[time_of_day] || 0; // Se null o altro, diventa 0
+
     try {
         const result = await db.query(
             `SELECT m.id, m.name, m.sector, m.hourly_rate, m.languages, m.review_count, m.rating, u.avatar_url
             FROM search_mentors($1, $2, $3, $4) m 
             JOIN users u ON m.id = u.id
             WHERE (
-                -- 1. Se nessun filtro temporale è attivo, mostra tutti i mentor filtrati per settore/prezzo
-                ($5::TIMESTAMP IS NULL AND $6::TIMESTAMP IS NULL AND $7 IS NULL)
+                -- Se session_start, session_end e timeValue sono nulli/0, prendi tutti
+                ($5::TIMESTAMP IS NULL AND $6::TIMESTAMP IS NULL AND $7 = 0)
                 OR 
-                -- 2. Altrimenti controlla che esista almeno una sessione che soddisfi i criteri
                 EXISTS (
                     SELECT 1
                     FROM sessions s
@@ -29,30 +36,30 @@ export const listMentors = async (req, res) => {
                       AND ($5::TIMESTAMP IS NULL OR s.start_time >= $5)
                       AND ($6::TIMESTAMP IS NULL OR s.end_time <= $6)
                       AND (
-                        $7::TEXT IS NULL OR
-                        ($7::TEXT = 'mattina'    AND EXTRACT(HOUR FROM s.start_time) BETWEEN 6 AND 11) OR
-                        ($7::TEXT = 'pomeriggio' AND EXTRACT(HOUR FROM s.start_time) BETWEEN 12 AND 17) OR
-                        ($7::TEXT = 'sera'       AND EXTRACT(HOUR FROM s.start_time) BETWEEN 18 AND 23)
+                        $7 = 0 OR -- Mostra tutti
+                        ($7 = 1 AND EXTRACT(HOUR FROM s.start_time) BETWEEN 6 AND 12) OR
+                        ($7 = 2 AND EXTRACT(HOUR FROM s.start_time) BETWEEN 13 AND 17) OR
+                        ($7 = 3 AND EXTRACT(HOUR FROM s.start_time) BETWEEN 18 AND 23)
                       )
                 )
             )
             ORDER BY m.rating DESC;`,
             [
                 sector || null,
-                null,
+                language || null, // Rimesso correttamente invece di null fisso
                 min_rating ? parseFloat(min_rating) : 0,
                 max_hourly_rate ? parseFloat(max_hourly_rate) : 9999,
                 session_start || null,
                 session_end || null,
-                time_of_day || null
+                timeValue // Passiamo l'intero 0, 1, 2 o 3
             ]
         );
 
-        res.json(result.rows); // Restituisci l'array puro per il .map() del frontend
+        res.json(result.rows);
 
     } catch (error) {
         console.error("Errore API listMentors:", error);
-        res.status(500).json({ message: "Errore durante la ricerca " + error.message });
+        res.status(500).json({ message: "Errore durante la ricerca: " + error.message });
     }
 }
 
