@@ -188,11 +188,11 @@ export const getUserBookings = async (req, res) => {
             `,
             [userId]
         );
-        console.log(result.rows,userId);
+        console.log(result.rows, userId);
         if (result.rows.length === 0) {
             return res.status(200).json({ bookings: [] });
         }
-        res.json({ booking: result.rows });
+        return res.status(200).json({ booking: result.rows });
     } catch (error) {
         console.error("Errore durante il recupero dei dettagli della prenotazione:", error);
         res.status(500).json({ error: "Errore del server durante il recupero dei dettagli della prenotazione." });
