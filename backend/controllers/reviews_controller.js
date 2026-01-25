@@ -20,12 +20,12 @@ export const post_review = async (req, res) => {
             FROM users
             WHERE id = $1 AND email_notifications = TRUE
             `,
-            [req.user.userId]
+            [mentorId]
         );
         if (userResult.rows.length > 0) {
             await enqueueEmail({
                 type: 'new_review',
-                recipient: req.user.email,
+                recipient: userResult.rows[0].email,
                 data: { name: req.user.name, mentorId: mentorId },
                 scheduleAt: null,
                 priority: 1
