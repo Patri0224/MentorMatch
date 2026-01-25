@@ -373,7 +373,7 @@ async function openChat(otherUserId, otherUserName) {
 async function refreshMessages() {
     if (!activeChatUserId) return;
     const container = document.getElementById('chatMessages');
-    const myId = AuthService.getUserId();
+    const myId = AuthService.getUser().id;
 
     try {
         // Recuperiamo i messaggi tramite API
