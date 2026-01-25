@@ -222,10 +222,10 @@ export const getUserBookings = async (req, res) => {
 
 export const cancelBooking = async (req, res) => {
     const userId = req.user.userId;
-    const { booking_id, reason } = req.body ?? {};
+    const { booking_id, reason } = req.body;
     const bookingId = Number(booking_id);
     await db.query("BEGIN");
-
+    console.log("Cancelamento booking:", bookingId, "da utente:", userId);
     const bookingCheck = await db.query(
         `
         SELECT mentee_id, mentor_id, session_id, status
@@ -256,7 +256,7 @@ export const cancelBooking = async (req, res) => {
         return res.status(400).json({ error: "Impossibile cancellare una prenotazione completata!" });
     }
 
-
+    console.log("Procedo con la cancellazione della booking:", bookingId);
     // 1) prendo booking + payment
     const infoRes = await db.query(
         `
@@ -276,9 +276,10 @@ export const cancelBooking = async (req, res) => {
     if (row.mentor_id !== userId && row.mentee_id !== userId) {
         await db.query("ROLLBACK"); return res.status(403).json({ error: "Non autorizzato" });
     }
-
+    console.log("Info booking per cancellazione:", row);
     // 2) se pagamento completato => refund
     if (row.payment_status === "completed" && row.stripe_session_id && test === false) {
+        console.log("Procedo con il rimborso per la booking:", bookingId);
         // Recupero checkout session per ottenere payment_intent
         const checkout = await stripe.checkout.sessions.retrieve(row.stripe_session_id);
         const paymentIntentId = checkout.payment_intent;
@@ -305,7 +306,7 @@ export const cancelBooking = async (req, res) => {
             [reason ?? null, paymentIntentId, refund.id, row.payment_id]
         );
     }
-
+    console.log("Procedo con l'aggiornamento dello stato della booking:", bookingId);
     // 3) cancello booking + rilascio session
     await db.query(
         `
@@ -320,7 +321,7 @@ export const cancelBooking = async (req, res) => {
     );
 
     await db.query(`UPDATE sessions SET available = TRUE WHERE id = $1`, [row.session_id]);
-
+    console.log("Cancellazione booking completata:", bookingId);
     await db.query("COMMIT");
     return res.json({ message: "Booking cancellata (e rimborsata se pagata)" });
 };
