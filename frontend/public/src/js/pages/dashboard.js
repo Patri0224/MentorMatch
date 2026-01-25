@@ -275,7 +275,8 @@ let activeChatUserId = null;
 async function loadMentorSessions(mentorId) {
     const list = document.getElementById('mentorSessionsList');
     try {
-        const sessions = await ApiService.getMentorSessions(mentorId);
+        const oggSessions = await ApiService.getMentorSessions(mentorId);
+        const sessions = oggSessions.sessions || [];
         list.innerHTML = sessions.map(s => `
             <div class="list-group-item d-flex justify-content-between align-items-center">
                 <div>
