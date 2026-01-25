@@ -495,7 +495,8 @@ async function initCalendar() {
                 const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
 
                 // Caricamento Bookings
-                const bookings = await ApiService.getUserBookings(user.id, user.role);
+                const o9bookings = await ApiService.getUserBookings(user.id, user.role);
+                const bookings = o9bookings.booking || [];
                 bookings.forEach(b => {
                     events.push({
                         title: user.role === 'mentor' ? `Con: ${b.mentee_name}` : `Mentor: ${b.mentor_name}`,
