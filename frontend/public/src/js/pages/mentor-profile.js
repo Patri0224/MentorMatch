@@ -173,7 +173,7 @@ async function loadReviews() {
                         <small class="text-muted">${new Date(rev.created_at).toLocaleDateString()}</small>
                     </div>
                     <p class="mb-1 mt-2">"${rev.comment}"</p>
-                    ${rev.response ? `<div class="ms-4 p-2 bg-light border-start border-primary small"><strong>Risposta del mentor:</strong> ${rev.response}</div>` : ''}
+                    ${rev.response ? `<div class="ms-4 p-2 bg-body border-start border-primary small"><strong>Risposta del mentor:</strong> ${rev.response}</div>` : ''}
                 </div>
             `;
         });
