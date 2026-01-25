@@ -10,12 +10,12 @@ const AuthService = {
         temp = Date.now();
         let ttl = 3600; // 1 ora in secondi
 
-        const { cod, id, name, role, token } = await ApiService.login(username, password); // Chiamata all'API di login
+        const { cod, id, name, role, email, bio, sector, languages, meeting_url, hourly_rate, avatar_url, token } = await ApiService.login(username, password); // Chiamata all'API di login
 
         if (cod != 1) {
             return cod; // Login fallito
         }
-        const user = { id, name, role, token };
+        const user = { id, name, role, email, bio, sector, languages, meeting_url, hourly_rate, avatar_url };
         localStorage.setItem(AUTH_KEY, JSON.stringify(user));
         localStorage.setItem('token', token);
         localStorage.setItem('lastLogin', new Date().toISOString());

@@ -110,7 +110,7 @@ async function handleProfileUpdate(e) {
         }
 
         // Meeting URL
-        addIfChanged('meeting_url', data.meetingLink, currentUser.mentor_meeting_url);
+        addIfChanged('meeting_url', data.meeting_url, currentUser.meeting_url);
 
         // Tariffa Oraria
         const newRate = parseFloat(data.hourly_rate);
