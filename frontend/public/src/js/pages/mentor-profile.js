@@ -249,11 +249,12 @@ async function submitReview() {
     }
 
     try {
-        await ApiService.postReview({
-            mentor_id: mentorId,
+        const reviewData = {
+            mentorId: mentorId,
             rating: parseInt(rating),
             comment: comment
-        });
+        };
+        await ApiService.postReview(reviewData);
         alert("Recensione pubblicata! Grazie per il tuo feedback.");
         location.reload();
     } catch (e) {
