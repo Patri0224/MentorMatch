@@ -186,7 +186,7 @@ async function loadBookings(userId, role) {
 
             if (isConfirmed) {
                 // Se la lezione è confermata e abbiamo un meeting_url (presente nella tua tabella)
-                if (b.meeting_url && (isPaid || isMentor)) {
+                if (b.meeting_url && (isPaid)) {
                     actionButtons = `
                         <a href="${b.meeting_url}" target="_blank" class="btn btn-sm btn-success fw-bold">
                             <i class="bi bi-camera-video-fill me-1"></i> Entra
