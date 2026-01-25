@@ -46,14 +46,15 @@ export const updateProfile = async (req, res) => {
         const setClause = keys.map((key, index) => `${key} = $${index + 1}`).join(", ");
         const values = keys.map((k) => updates[k]);
         values.push(userID);
-
+        console.error("updateProfile called with updates:", updates);
+        console.error("Generated SQL:", setClause, "Values:", values);
         // FIX: RETURNING corretto (evitiamo di restituire la password)
         const query = `
             UPDATE users SET ${setClause} 
-            WHERE id = $${values.length-1} 
+            WHERE id = $${values.length - 1} 
             RETURNING id, name, email, bio, sector, languages, meeting_url, hourly_rate, avatar_url;
         `;
-
+        console.log("Executing query:", query, "with values:", values);
         const result = await db.query(query, values);
 
         if (result.rows.length === 0) {
