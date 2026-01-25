@@ -40,21 +40,37 @@ export const updateProfile = async (req, res) => {
         }
         updates.hourly_rate = n;
     }
-
     try {
+        // 1. Recupero corretto dell'ID (assicurati che il middleware lo passi così)
+        const userID = req.userId || req.user?.id;
+
+        if (!userID) {
+            return res.status(401).json({ message: "ID utente non trovato nel token" });
+        }
+
         const keys = Object.keys(updates);
+
+        // 2. I segnaposto per il SET (es. $1, $2, $3...)
         const setClause = keys.map((key, index) => `${key} = $${index + 1}`).join(", ");
+
+        // 3. Prepariamo l'array dei valori
         const values = keys.map((k) => updates[k]);
+
+        // 4. AGGIUNGIAMO l'ID alla fine dell'array
         values.push(userID);
-        console.error("updateProfile called with updates:", updates);
-        console.error("Generated SQL:", setClause, "Values:", values);
-        // FIX: RETURNING corretto (evitiamo di restituire la password)
+
+        // 5. La query deve usare l'ULTIMO indice per il WHERE
+        // Se hai 5 campi nel SET, l'ID sarà il $6
         const query = `
-            UPDATE users SET ${setClause} 
-            WHERE id = $${values.length - 1} 
-            RETURNING id, name, email, bio, sector, languages, meeting_url, hourly_rate, avatar_url;
-        `;
-        console.log("Executing query:", query, "with values:", values);
+        UPDATE users 
+        SET ${setClause} 
+        WHERE id = $${values.length} 
+        RETURNING id, name, email, bio, sector, languages, meeting_url, hourly_rate, avatar_url;
+    `;
+
+        console.log("Query generata:", query);
+        console.log("Valori inviati:", values);
+
         const result = await db.query(query, values);
 
         if (result.rows.length === 0) {
@@ -62,10 +78,10 @@ export const updateProfile = async (req, res) => {
         }
 
         res.json({ message: "Profilo aggiornato con successo", user: result.rows[0] });
+
     } catch (error) {
         console.error("Errore updateProfile:", error);
-        if (error.code === '23505') return res.status(409).json({ message: "Email già in uso" });
-        res.status(500).json({ message: "Errore del server" });
+        res.status(500).json({ message: "Errore del server: " + error.message });
     }
 }
 
