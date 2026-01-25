@@ -88,9 +88,9 @@ export const getChatHistory = async (req, res) => {
     try {
         const result = await db.query(
             `
-            SELECT sender_id, receiver_id, content, created_at, read, read_at
+            SELECT sender_id, recipient_id, content, created_at, read, read_at
             FROM messages
-            WHERE (sender_id = $1 AND receiver_id = $2) OR (sender_id = $2 AND receiver_id = $1)
+            WHERE (sender_id = $1 AND recipient_id = $2) OR (sender_id = $2 AND recipient_id = $1)
             ORDER BY created_at ASC
             `,
             [userId, withUserId]
@@ -98,7 +98,7 @@ export const getChatHistory = async (req, res) => {
         res.status(200).json({ messages: result.rows });
     } catch (error) {
         console.error("Errore durante il recupero della cronologia chat:", error);
-        res.status(500).json({ error: "Errore interno del server." });
+        res.status(500).json({ error: "Errore interno del server." + error.message });
     }
 }
 
