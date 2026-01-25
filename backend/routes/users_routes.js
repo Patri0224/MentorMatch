@@ -4,7 +4,7 @@ import { updateProfile, getUserStats, deleteMyaccount } from "../controllers/use
 
 const router = express.Router();
 
-router.patch("/update_profile", authenticateToken, updateProfile);
+router.post("/update_profile", authenticateToken, updateProfile);
 router.post("/stats", authenticateToken, getUserStats);
 router.delete("/delete_account", authenticateToken, deleteMyaccount);
 

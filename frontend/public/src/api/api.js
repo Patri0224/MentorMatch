@@ -349,10 +349,7 @@ const ApiService = {
      */
     async searchMentors(filters) {
         try {
-            // 1. Trasforma l'oggetto filters in una query string (es. ?sector=tech&rating=4)
-            const queryParams = new URLSearchParams(filters).toString();
             const url = `${API_BASE_URL}/mentors/search`;
-
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
