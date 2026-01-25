@@ -118,34 +118,67 @@ chiedi di rifare
 */
 async function loadAvailableSessions() {
     const list = document.getElementById('sessionsList');
+    if (!list) return;
+
     try {
-        const sessions = await ApiService.getMentorSessions(mentorId);
-        list.innerHTML = '';
-        /*
-        id,mentor_id,start_time,end_time,duration
-        */
-        if (!sessions || sessions.length === 0) {
-            list.innerHTML = '<p class="text-muted small p-3 border rounded">Nessuno slot disponibile al momento.</p>';
+        // mentorId deve essere disponibile nello scope globale della pagina (es. dai query params)
+        const response = await ApiService.getMentorSessions(mentorId);
+
+        // Gestione robusta dei dati: cerchiamo l'array ovunque sia
+        const sessions = Array.isArray(response) ? response : (response.sessions || []);
+
+        // Filtriamo solo quelle effettivamente disponibili (available: true)
+        const availableSlots = sessions.filter(s => s.available === true);
+
+        if (availableSlots.length === 0) {
+            list.innerHTML = `
+                <div class="text-center p-4 border rounded bg-light">
+                    <i class="bi bi-calendar-x text-muted fs-2"></i>
+                    <p class="text-muted small mt-2 mb-0">Nessuno slot disponibile al momento.<br>Torna a trovarci presto!</p>
+                </div>`;
             return;
         }
 
-        sessions.forEach(session => {
-            const startDate = new Date(session.start_time);
-            const dateStr = startDate.toLocaleDateString('it-IT', { day: '2-digit', month: 'short' });
-            const timeStr = startDate.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+        // Generiamo l'HTML in un colpo solo
+        list.innerHTML = availableSlots.map(session => {
+            const start = new Date(session.start_time);
+            const end = new Date(session.end_time);
 
-            list.innerHTML += `
-                <button onclick="bookSession(${session.id})" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start-0 border-end-0 py-3">
-                    <div>
-                        <div class="fw-bold">${dateStr} alle ${timeStr}</div>
-                        <small class="text-muted">${session.duration} minuti di sessione</small>
+            // Formattazione stile "Google Calendar"
+            const dateStr = start.toLocaleDateString('it-IT', {
+                weekday: 'short',
+                day: '2-digit',
+                month: 'short'
+            });
+            const startTimeStr = start.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+            const endTimeStr = end.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+            return `
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3 border-start-0 border-end-0">
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center mb-1">
+                            <i class="bi bi-clock-fill text-primary me-2"></i>
+                            <span class="fw-bold text-capitalize">${dateStr}</span>
+                        </div>
+                        <div class="text-dark small">
+                            ${startTimeStr} — ${endTimeStr} 
+                            <span class="text-muted ms-2">(${session.duration} min)</span>
+                        </div>
                     </div>
-                    <span class="btn btn-sm btn-primary">Prenota</span>
-                </button>
+                    <button onclick="bookSession(${session.id})" class="btn btn-primary btn-sm px-3 fw-bold shadow-sm">
+                        Prenota
+                    </button>
+                </div>
             `;
-        });
+        }).join('');
+
     } catch (e) {
-        list.innerHTML = '<p class="text-danger small">Errore nel caricamento delle sessioni.</p>';
+        console.error("Errore loadAvailableSessions:", e);
+        list.innerHTML = `
+            <div class="alert alert-danger d-flex align-items-center small" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                Errore nel caricamento delle sessioni. Riprova più tardi.
+            </div>`;
     }
 }
 
@@ -155,7 +188,8 @@ async function loadAvailableSessions() {
 async function loadReviews() {
     const reviewsList = document.getElementById('reviewsList');
     try {
-        const reviews = await ApiService.getMentorReviews(mentorId);
+        const oggReviews = await ApiService.getMentorReviews(mentorId);
+        const reviews = oggReviews.reviews || [];
         reviewsList.innerHTML = '';
 
         if (!reviews || reviews.length === 0) {
