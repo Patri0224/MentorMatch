@@ -29,10 +29,10 @@ export const listMentors = async (req, res) => {
                       AND ($5::TIMESTAMP IS NULL OR s.start_time >= $5)
                       AND ($6::TIMESTAMP IS NULL OR s.end_time <= $6)
                       AND (
-                        $7 IS NULL OR
-                        ($7 = 'mattina'    AND EXTRACT(HOUR FROM s.start_time) BETWEEN 6 AND 11) OR
-                        ($7 = 'pomeriggio' AND EXTRACT(HOUR FROM s.start_time) BETWEEN 12 AND 17) OR
-                        ($7 = 'sera'       AND EXTRACT(HOUR FROM s.start_time) BETWEEN 18 AND 23)
+                        $7::TEXT IS NULL OR
+                        ($7::TEXT = 'mattina'    AND EXTRACT(HOUR FROM s.start_time) BETWEEN 6 AND 11) OR
+                        ($7::TEXT = 'pomeriggio' AND EXTRACT(HOUR FROM s.start_time) BETWEEN 12 AND 17) OR
+                        ($7::TEXT = 'sera'       AND EXTRACT(HOUR FROM s.start_time) BETWEEN 18 AND 23)
                       )
                 )
             )

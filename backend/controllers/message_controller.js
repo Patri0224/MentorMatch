@@ -45,7 +45,7 @@ export const postMessage = async (req, res) => {
 
 
 export const getMessages = async (req, res) => {
-    const userId = req.params.userId;
+    const userId = req.user.userId;
 
     try {
         const result = await db.query(
@@ -61,7 +61,7 @@ export const getMessages = async (req, res) => {
         JOIN users u ON u.id = (CASE WHEN m.sender_id = $1 THEN m.recipient_id ELSE m.sender_id END)
         WHERE m.sender_id = $1 OR m.recipient_id = $1
         ORDER BY (CASE WHEN sender_id = $1 THEN recipient_id ELSE sender_id END), m.created_at DESC;
-    `
+    `,
             [userId]
         );
         if (result.rows.length === 0) {
