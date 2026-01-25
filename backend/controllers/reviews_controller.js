@@ -3,7 +3,7 @@ import { enqueueEmail } from '../src/email/email_service.js';
 
 export const post_review = async (req, res) => {
     const { mentorId, rating, comment } = req.body;
-    const userId = req.userId;
+    const userId = req.user.id;
     try {
         const result = await db.query(
             `
@@ -39,7 +39,7 @@ export const post_review = async (req, res) => {
 
 export const answer_review = async (req, res) => {
     const { reviewId, answer } = req.body;
-    const userId = req.userId;
+    const userId = req.user.id;
     try {
         const result = await db.query(
             `
