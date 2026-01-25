@@ -2,8 +2,7 @@ import db from "../src/db.js";
 import bcrypt from 'bcrypt';
 
 export const updateProfile = async (req, res) => {
-    // Nota: assicurati che il middleware popoli req.userId
-    const userID = req.userId || req.user?.id;
+   
 
     const allowedFields = [
         "name",
@@ -42,7 +41,7 @@ export const updateProfile = async (req, res) => {
     }
     try {
         // 1. Recupero corretto dell'ID (assicurati che il middleware lo passi così)
-        const userID = req.userId || req.user?.id;
+        const userID = req.user.userId;
 
         if (!userID) {
             return res.status(401).json({ message: "ID utente non trovato nel token" });
@@ -86,7 +85,7 @@ export const updateProfile = async (req, res) => {
 }
 
 export const deleteMyaccount = async (req, res) => {
-    const userID = req.userId || req.user?.id;
+    const userID = req.user.userId;
     const { password } = req.body;
 
     if (!password) {
@@ -133,7 +132,7 @@ export const deleteMyaccount = async (req, res) => {
 }
 
 export const getUserStats = async (req, res) => {
-    const userID = req.userId;
+    const userID = req.user.userId;
     try {
         const result = await db.query(
             `SELECT * FROM get_user_stats($1)`,
