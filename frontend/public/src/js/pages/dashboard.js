@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function renderRoleSpecificUI(role) {
     if (role === 'mentor') {
         document.getElementById('navSessions').classList.remove('d-none');
+        document.getElementById('navReviews').classList.remove('d-none'); // AGGIUNTO
         document.querySelectorAll('.mentor-only').forEach(el => el.classList.remove('d-none'));
     }
 }
@@ -453,8 +454,7 @@ document.getElementById('chatForm').addEventListener('submit', async (e) => {
 
     try {
         await ApiService.postMessage({
-            sender_id: AuthService.getUserId(),
-            recipient_id: activeChatUserId,
+            recipientId: activeChatUserId,
             content: content
         });
         input.value = '';
