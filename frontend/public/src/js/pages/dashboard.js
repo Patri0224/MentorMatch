@@ -434,22 +434,19 @@ async function refreshMessages() {
 /**
  * Gestisce l'eliminazione definitiva dell'account
  */
-async function handleDeleteAccount(confirmDeletePassword) {
+async function handleDeleteAccount() {
     // Prima conferma
     const firstCheck = confirm("ATTENZIONE: Sei sicuro di voler eliminare il tuo account? Questa azione è irreversibile.");
     if (!firstCheck) return;
 
     // Seconda conferma (Protezione extra)
-    const securityCheck = prompt("Per confermare l'eliminazione definitiva, scrivi 'ELIMINA' nel campo sottostante:");
+    const securityCheck = prompt("Per confermare l'eliminazione definitiva, immetti la tua password nel campo sottostante:");
 
-    if (securityCheck !== 'ELIMINA') {
-        alert("Operazione annullata: la parola di conferma non è corretta.");
-        return;
-    }
+   
 
     try {
         // Chiamata API alla tabella 'users'
-        const response = await ApiService.deleteAccount(confirmDeletePassword);
+        const response = await ApiService.deleteAccount(securityCheck);
 
         alert("Il tuo account è stato eliminato con successo. Ci dispiace vederti andare via!");
 
