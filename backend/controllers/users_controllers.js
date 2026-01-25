@@ -1,9 +1,6 @@
 import db from "../src/db.js";
 import bcrypt from 'bcrypt';
 
-import db from "../src/db.js";
-import bcrypt from 'bcrypt';
-
 export const updateProfile = async (req, res) => {
     // Nota: assicurati che il middleware popoli req.userId
     const userID = req.userId || req.user?.id;
