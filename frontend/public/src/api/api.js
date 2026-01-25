@@ -462,7 +462,7 @@ const ApiService = {
     * Nota: Grazie ai vincoli ON DELETE CASCADE nel tuo DB, 
     * l'eliminazione dell'utente rimuoverà automaticamente sessioni, messaggi e notifiche collegate.
     */
-    async deleteAccount(confirmDeletePassword) {
+    async deleteAccount(password) {
         try {
             const response = await fetch(`${API_BASE_URL}/users/delete_account`, {
                 method: 'DELETE',
@@ -470,7 +470,7 @@ const ApiService = {
                     'Content-Type': 'application/json',
                     'authorization': 'Bearer ' + AuthService.getUser().token
                 },
-                body: JSON.stringify({ confirmDeletePassword })
+                body: JSON.stringify({ password })
             });
 
             if (!response.ok) {
