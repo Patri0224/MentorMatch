@@ -66,6 +66,7 @@ export const createCheckoutBooking = async (req, res) => {
             [bookingId, totaledaPagare, 'eur', 'pending']
         );
 
+        const paymentIntentId = pRes.rows[0].id;
 
         const test = true;
         const free = totaledaPagare === 0 || totaledaPagare === 0.0 || totaledaPagare === 0.00 || test === true;
