@@ -11,7 +11,7 @@ export const updateProfile = async (req, res) => {
         "password",
         "sector",
         "languages",
-        "meeting_url", // Corretto da mentor_meeting_url a meeting_url
+        "meeting_url",
         "hourly_rate",
     ];
 
