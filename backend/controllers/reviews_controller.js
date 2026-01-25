@@ -5,7 +5,7 @@ export const post_review = async (req, res) => {
     const body = req.body;
     console.error("post_review body:", body);
     const { mentor_id, rating, comment } = body;
-    const userId = req.user.id;
+    const userId = req.user.userId;
     try {
         const result = await db.query(
             `
@@ -41,7 +41,7 @@ export const post_review = async (req, res) => {
 
 export const answer_review = async (req, res) => {
     const { reviewId, answer } = req.body;
-    const userId = req.user.id;
+    const userId = req.user.userId;
     try {
         const result = await db.query(
             `
