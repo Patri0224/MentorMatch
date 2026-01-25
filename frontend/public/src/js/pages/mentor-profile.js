@@ -95,8 +95,7 @@ async function loadAvailableSessions() {
         // mentorId deve essere disponibile nello scope globale della pagina (es. dai query params)
         const response = await ApiService.getMentorSessions(mentorId);
 
-        // Gestione robusta dei dati: cerchiamo l'array ovunque sia
-        const sessions = Array.isArray(response) ? response : (response.sessions || []);
+        const sessions = response.sessions || [];
 
         // Filtriamo solo quelle effettivamente disponibili (available: true)
         const availableSlots = sessions.filter(s => s.available === true);

@@ -283,7 +283,6 @@ async function loadMentorSessions(mentorId) {
                     <span class="fw-bold">${new Date(s.start_time).toLocaleDateString()}</span> 
                     dalle ${new Date(s.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} 
                     alle ${new Date(s.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    ${s.available ? '<span class="badge bg-success ms-2">Libero</span>' : '<span class="badge bg-secondary ms-2">Prenotato</span>'}
                 </div>
                 <button class="btn btn-sm btn-outline-danger" onclick="handleDeleteSession(${s.id})" ${!s.available ? 'disabled' : ''}>
                     <i class="bi bi-trash"></i>
