@@ -351,14 +351,15 @@ const ApiService = {
         try {
             // 1. Trasforma l'oggetto filters in una query string (es. ?sector=tech&rating=4)
             const queryParams = new URLSearchParams(filters).toString();
-            const url = `${API_BASE_URL}/mentors/search/${queryParams}`;
+            const url = `${API_BASE_URL}/mentors/search`;
 
             const response = await fetch(url, {
-                method: 'GET', // Ora è una GET
+                method: 'POST',
                 headers: {
-                    'Accept': 'application/json'
-                }
-                // body rimosso perché nelle GET non è ammesso
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(filters)
             });
 
             const data = await response.json();

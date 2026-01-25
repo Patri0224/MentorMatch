@@ -3,7 +3,7 @@ import { listMentors, getSectors, getMentorById, getMentorsReviews} from '../con
 
 const router = express.Router();
 
-router.get('/search/:filters', listMentors);
+router.post('/search', listMentors);
 router.get('/get-sector', getSectors);
 router.get('/get-mentor/:id', getMentorById);
 router.get('/reviews/:mentorId', getMentorsReviews);

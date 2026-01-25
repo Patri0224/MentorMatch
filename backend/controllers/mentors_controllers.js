@@ -9,8 +9,8 @@ export const listMentors = async (req, res) => {
         session_start,
         session_end,
         time_of_day
-    } = req.query;
-    console.error("listMentors called with raw query:", req.query);
+    } = req.body;
+    console.error("listMentors called with raw query:", req.body);
     // 1. Mappatura Numerica della fascia oraria
     const timeMap = {
         "mattina": 1,
