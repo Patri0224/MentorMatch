@@ -333,7 +333,7 @@ async function loadConversations() {
         }
 
         conversations.forEach(conv => {
-            const isUnread = !conv.read && conv.recipient_id === AuthService.getUserId();
+            const isUnread = !conv.read && conv.recipient_id === AuthService.getUser().id;
             list.innerHTML += `
                 <button onclick="openChat(${conv.other_user_id}, '${conv.other_user_name}')" 
                         class="list-group-item list-group-item-action border-0 py-3 ${activeChatUserId === conv.other_user_id ? 'active' : ''}">
