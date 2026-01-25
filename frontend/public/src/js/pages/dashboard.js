@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const preview = document.getElementById('profileAvatar');
 
         // Se il campo è vuoto, usa l'avatar di default
-        preview.src = newUrl || 'assets/default-avatar.png';
+        preview.src = newUrl || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
     });
     // 2. Ascolta il cambio di tab per aggiornare l'URL
     const tabEls = document.querySelectorAll('#dashboardNav a[data-bs-toggle="tab"]');
@@ -66,7 +66,7 @@ async function loadUserProfile(userId) {
         document.getElementById('editBio').value = data.user.bio || '';
         document.getElementById('editNotif').checked = data.user.email_notifications;
         document.getElementById('editAvatar').value = data.user.avatar_url || '';
-        document.getElementById('profileAvatar').src = data.user.avatar_url || 'assets/default-avatar.png';
+        document.getElementById('profileAvatar').src = data.user.avatar_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
         if (data.user.role === 'mentor') {
             document.getElementById('editLanguage').value = (data.user.languages && data.user.languages.length > 0) ? data.user.languages.join(', ') : '';
             document.getElementById('editSector').value = data.user.sector || '';
