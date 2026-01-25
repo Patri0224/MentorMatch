@@ -19,14 +19,14 @@ export const listMentors = async (req, res) => {
     };
     const timeValue = timeMap[time_of_day] || 0; // Se null o altro, diventa 0
     console.error("listMentors called with params:", {
-        sector,
-        language,
-        max_hourly_rate,
-        min_rating,
-        session_start,
-        session_end,
-        time_of_day,
-        timeValue
+        sector: sector,
+        language: language,
+        max_hourly_rate: max_hourly_rate,
+        min_rating: min_rating,
+        session_start: session_start,
+        session_end: session_end,
+        time_of_day: time_of_day,
+        timeValue: timeValue
     });
 
     try {
