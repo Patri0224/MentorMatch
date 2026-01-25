@@ -2,7 +2,9 @@ import db from '../src/db.js';
 import { enqueueEmail } from '../src/email/email_service.js';
 
 export const post_review = async (req, res) => {
-    const { mentorId, rating, comment } = req.body.reviewData;
+    const body = req.body;
+    console.error("post_review body:", body);
+    const { mentorId, rating, comment } = body;
     const userId = req.user.id;
     try {
         const result = await db.query(
