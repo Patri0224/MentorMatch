@@ -121,7 +121,17 @@
                             <h4 class="fw-bold mb-4">Impostazioni Profilo</h4>
                             <form id="profileForm">
                                 <div class="row g-3">
+                                    <div class="col-md-6 mb-4">
+                                        <img id="profileAvatar" src="assets/default-avatar.png" alt="Avatar"
+                                            class="rounded-circle border" width="120" height="120">
+                                    </div>
                                     <div class="col-md-6">
+                                        <label for="editAvatar" class="form-label fw-bold">Cambia Avatar
+                                            Profilo</label>
+                                        <input class="form-control mx-auto" type="text" name="avatar_url"
+                                            id="editAvatar">
+                                    </div>
+                                    <div class=" col-md-6">
                                         <label class="form-label fw-bold">Nome Completo</label>
                                         <input type="text" class="form-control" name="name" id="editName" required>
                                     </div>
@@ -176,7 +186,8 @@
                                             <input type="url" class="form-control" name="meeting_url"
                                                 id="editMeetingUrl" placeholder="https://meet.google.com/abc-defg-hij">
                                         </div>
-                                        <small class="text-muted">Questo link verrà mostrato ai tuoi mentee al momento
+                                        <small class="text-muted">Questo link verrà mostrato ai tuoi mentee al
+                                            momento
                                             della lezione.</small>
                                     </div>
                                     <div class="col-12 mt-4 pt-3 border-top">
@@ -198,7 +209,8 @@
                                                 <div>
                                                     <h5 class="text-danger fw-bold mb-1">Elimina Account</h5>
                                                     <p class="mb-0 text-muted small">
-                                                        Una volta eliminato l'account, non potrai più recuperare i tuoi
+                                                        Una volta eliminato l'account, non potrai più recuperare i
+                                                        tuoi
                                                         dati, le tue prenotazioni o i tuoi messaggi.
                                                     </p>
                                                 </div>
