@@ -10,7 +10,7 @@ Per eseguire il progetto in locale:
 
 - **Node.js 18+**
 - **npm**
-- **Docker** (opzionale ma consigliato)
+- **Docker** 
 - Account **Render** (per il deploy cloud)
 
 ---
@@ -78,9 +78,9 @@ docker build -t mentor-match ./backend
 docker run -p 3000:3000 \
   -e PORT=3000 \
   -e NODE_ENV=development \
-  -e DATABASE_URL=your_database_url \
-  -e STRIPE_SECRET_KEY=your_key \
-  -e STRIPE_WEBHOOK_SECRET=your_secret \
+  -e DATABASE_URL=... \
+  -e STRIPE_SECRET_KEY=... \
+  -e STRIPE_WEBHOOK_SECRET=... \
   mentor-match
 ```
 
@@ -170,21 +170,4 @@ L’app è pronta per lo scaling cloud:
 
 ---
 
-## Stack Tecnologico
 
-- Node.js
-- Express
-- Docker
-- GitHub Actions (CI)
-- Render (CD & Hosting)
-- Stripe (pagamenti)
-
----
-
-## Stato del progetto
-
-✔ Containerizzato  
-✔ CI attiva  
-✔ Deploy automatico  
-✔ Health monitoring  
-✔ Cloud-ready
