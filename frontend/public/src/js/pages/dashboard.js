@@ -281,7 +281,6 @@ async function handleCancelBooking(bookingId) {
 
     try {
         await ApiService.cancelBooking(bookingId, reason);
-        alert("Prenotazione annullata.");
         location.reload();
     } catch (e) {
         alert("Errore: " + e.message);
@@ -344,7 +343,6 @@ async function handleDeleteSession(sessionId) {
     if (!confirmDelete) return;
     try {
         await ApiService.deleteSession(sessionId);
-        alert("Slot eliminato.");
         loadMentorSessions(AuthService.getUser().id);
     } catch (e) { alert("Errore: " + e.message); }
 }

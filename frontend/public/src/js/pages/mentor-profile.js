@@ -248,7 +248,6 @@ async function submitReview() {
             comment: comment
         };
         await ApiService.postReview(reviewData);
-        alert("Recensione pubblicata! Grazie per il tuo feedback.");
         location.reload();
     } catch (e) {
         alert("Errore nella pubblicazione della recensione.");
