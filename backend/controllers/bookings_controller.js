@@ -246,7 +246,7 @@ export const cancelBooking = async (req, res) => {
         return res.status(403).json({ error: "Non autorizzato a cancellare questa prenotazione!" });
     }
 
-    if (booking.status === 'canceled') {
+    if (booking.status === 'cancelled') {
         await db.query('ROLLBACK');
         return res.status(400).json({ error: "La prenotazione è già stata cancellata!" });
     }
