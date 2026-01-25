@@ -215,7 +215,6 @@ async function sendMessage() {
 
     try {
         await ApiService.postMessage({
-            sender_id: AuthService.getUserId(),
             recipientId: mentorId,
             content: content
         });
