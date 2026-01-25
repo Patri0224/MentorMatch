@@ -47,7 +47,7 @@ export const answer_review = async (req, res) => {
         const result = await db.query(
             `
             UPDATE reviews
-            SET answer = $1
+            SET response = $1
             WHERE id = $2 AND mentor_id = $3
             RETURNING id    
             `,
