@@ -18,6 +18,16 @@ export const listMentors = async (req, res) => {
         "sera": 3
     };
     const timeValue = timeMap[time_of_day] || 0; // Se null o altro, diventa 0
+    console.error("listMentors called with params:", {
+        sector,
+        language,
+        max_hourly_rate,
+        min_rating,
+        session_start,
+        session_end,
+        time_of_day,
+        timeValue
+    });
 
     try {
         const result = await db.query(
@@ -54,7 +64,7 @@ export const listMentors = async (req, res) => {
                 timeValue // Passiamo l'intero 0, 1, 2 o 3
             ]
         );
-
+        console.log("Risultato query:", result.rows);
         res.json(result.rows);
 
     } catch (error) {
